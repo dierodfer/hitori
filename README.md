@@ -6,4 +6,4 @@ La aplicación debe de resolver el problema Hitori(rompecabezas japones) con dif
 
 *Diego Rodríguez Fernández*
 
-*Luis ....*
+*Luis Miguel García Rodríguez*
