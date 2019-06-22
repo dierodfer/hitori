@@ -9,8 +9,9 @@ from tkinter.ttk import *
 import random
 from datetime import datetime
 import time
+import ast
 
-#Variables Globales
+# Variables Globales
 filas = 0
 columnas = 0
 tipoBusqueda = 'Tipo Busqueda 1'
@@ -23,42 +24,43 @@ def init():
     window = Tk()
     window.title("Hitori")
     window.geometry('800x350')
-
-    #Labels    
+    global columnas
+    # Labels    
     lblFila = Label(window, text="N: " + str(filas))
     lblFila.grid(padx=5, pady=5, column=3, row=0)
     lblColumna = Label(window, text="M: " + str(columnas))
     lblColumna.grid(padx=5, pady=5, column=4, row=0)   
-    lblBusqueda = Label(window, text= tipoBusqueda)
+    lblBusqueda = Label(window, text=tipoBusqueda)
     lblBusqueda.grid(padx=5, pady=5, column=5, row=0)
     lblX = Label(window, text="x")
     lblRuta = Label(window, text="Ruta:")
+    lblLineaALeer = Label(window, text="Linea:")
     lblError = Label(window, text="Errores", background="red")
 
     btnCargar = Button(window, text="Cargar", width=40)
     btnResolver = Button(window, text="Resolver", width=40)
     
-    #Inputs
-    inputRuta = Entry(window,width=30)    
-    inputFilas = Entry(window,width=4)
-    inputColumnas = Entry(window,width=4)
+    # Inputs
+    inputRuta = Entry(window, width=30)
+    inputLineaALeer = Entry(window, width=4)   
+    inputFilas = Entry(window, width=4)
+    inputColumnas = Entry(window, width=4)
     inputTipo = Combobox(window)
-    inputTipo['values']= ('Tipo busqueda 1', 'Tipo busqueda 2', 'Tipo busqueda 3', 'Tipo busqueda 4')
+    inputTipo['values'] = ('Tipo busqueda 1', 'Tipo busqueda 2', 'Tipo busqueda 3', 'Tipo busqueda 4')
     inputTipo.current(0)
     
-    #Muestra el error enviado
+    # Muestra el error enviado
     def mostrarError(error):
         lblError.config(text=error)
-        lblError.grid(pady=5, padx= 5, column=3, row=3, columnspan=6)
+        lblError.grid(pady=5, padx=5, column=3, row=3, columnspan=6)
     
-    
-    #Funciones botones
+    # Funciones botones
     def clickBtnCargar1():
         if len(inputFilas.get()) & len(inputColumnas.get()):
             escondeComponentes()
-            lblFila.configure(text='N: '+inputFilas.get())
-            lblColumna.configure(text='M: '+inputColumnas.get())
-            lblBusqueda.configure(text= inputTipo.get())
+            lblFila.configure(text='N: ' + inputFilas.get())
+            lblColumna.configure(text='M: ' + inputColumnas.get())
+            lblBusqueda.configure(text=inputTipo.get())
             btnResolver.grid(column=3, row=1, columnspan=6)
             
             cargarVariablesGlobales(inputFilas.get(), inputColumnas.get(), inputTipo.get())
@@ -70,10 +72,12 @@ def init():
     def clickBtnCargar2():
         if len(inputRuta.get()) > 0:
             escondeComponentes()
-            if(cargarFichero(inputRuta.get())):
-                #TODO cambiar valores N/A por los globales
-                lblFila.configure(text='N: '+'0')
-                lblColumna.configure(text='M: '+'0')
+            if(cargarTableroFichero(inputRuta.get(), inputLineaALeer.get(), inputTipo.get())):
+                # TODO cambiar valores N/A por los globales
+                lblFila.configure(text='N: ' + str(filas))
+                lblColumna.configure(text='M: ' + str(columnas))
+                lblBusqueda.configure(text=tipoBusqueda)
+                btnResolver.grid(column=3, row=1, columnspan=6)
             else:
                 mostrarError('No se pudo cargar el archivo')
         else:
@@ -82,8 +86,8 @@ def init():
     def clickBtnResolver():
         starttime = datetime.now()
         resolverHitori()
-        diff =  datetime.now() - starttime;
-        print('Finalizado en: ' + str(diff.seconds) + ',' +str(diff.microseconds) + 'segundos')
+        diff = datetime.now() - starttime;
+        print('Finalizado en: ' + str(diff.seconds) + ',' + str(diff.microseconds) + 'segundos')
         escondeComponentes()
     
     def clickBtnGenerar():
@@ -97,10 +101,13 @@ def init():
         
     def clickBtnLeer():
         escondeComponentes()
-        inputRuta.grid(padx=5, pady=5, column=4, row=1, columnspan=2)
-        lblRuta.grid(padx=5, pady=5, column=3, row=1)
+        inputRuta.grid(padx=5, pady=5, column=4, row=2, columnspan=3)
+        lblRuta.grid(padx=5, pady=5, column=3, row=2)
+        inputLineaALeer.grid(padx=5, pady=5, column=4, row=3, columnspan=3)
+        lblLineaALeer.grid(padx=1, pady=1, column=3, row=3)
+        inputTipo.grid(padx=5, pady=5, column=3, row=1, columnspan=3)
         btnCargar.configure(command=clickBtnCargar2)
-        btnCargar.grid(column=3, row=2, columnspan=6)
+        btnCargar.grid(column=3, row=4, columnspan=6)
     
     def escondeComponentes():
         inputColumnas.grid_remove()
@@ -109,12 +116,13 @@ def init():
         inputTipo.grid_remove()
         inputRuta.grid_remove()
         lblRuta.grid_remove()
+        inputLineaALeer.grid_remove()
+        lblLineaALeer.grid_remove()
         btnCargar.grid_remove()
         lblError.grid_remove()
         btnResolver.grid_remove()
-    
 
-    #Botones
+    # Botones
     btnGenerar = Button(window, text="Generar Hitori", command=clickBtnGenerar, width=30)
     btnGenerar.grid(padx=5, pady=5, column=1, row=0)
     btnLeer = Button(window, text="Leer Hitori", command=clickBtnLeer, width=30)
@@ -125,10 +133,12 @@ def init():
 
     window.mainloop()
 
+
 def resolverHitori():
     print(tipoBusqueda)
     time.sleep(5)
-    #TODO HEURISTICAS
+    # TODO HEURISTICAS
+
 
 def cargarVariablesGlobales(fil, col, tipo):
     global filas
@@ -137,6 +147,7 @@ def cargarVariablesGlobales(fil, col, tipo):
     filas = int(fil)
     columnas = int(col)
     tipoBusqueda = tipo
+
     
 def createRandomTablero():
     global tablero
@@ -147,19 +158,34 @@ def createRandomTablero():
             arrayColumnas.append(random.randrange(1, 9))
         tablero.append(arrayColumnas)
 
+
 def displayTablero():
+    global lblTablero
     for fila in range(filas):
         for columna in range(columnas):
-            Label(window, text=tablero[fila][columna]).grid(padx=3, pady=3 ,row=fila+1,column=columna+12)
+            lblTablero = Label(window, text=tablero[fila][columna]).grid(padx=3, pady=3 , row=fila + 1, column=columna + 12)
+
             
-def cargarFichero(ruta):
-    #TODO Devuelve false en caso de error y true en caso positivo
-    cargarVariablesGlobales('0','0', 'Tipo Busqueda 1')
-    #Una vez cargado el tablero ejecutar displayTablero()
+def cargarTableroFichero(ruta, lineaSeleccionada, tipoBusqueda):
+    global tablero
+    tablero = []
+    fichero = open(ruta, 'r')
+    lineaLectura = 1
+    for linea in fichero:
+        if lineaLectura == int(lineaSeleccionada):
+             tablero = ast.literal_eval(linea)
+             break
+        else:
+            lineaLectura = lineaLectura + 1 
+            
+    tamColumna = len(tablero[0])
+    tamFila = len(tablero)  
+    cargarVariablesGlobales(tamColumna, tamFila, tipoBusqueda)
+    displayTablero()
     return True
-    
-         
+
 if __name__ == '__main__':
+
     def reset():
         window.destroy()
         init()
