@@ -138,13 +138,14 @@ def init():
 
 def resolverHitori():
     print(tipoBusqueda)
-    #problemaHiroti = problema_estados.ProblemaEspacioEstados(acciones, estado_inicial, estados_finales);
-    #b_anchura = busqueda_estados.BúsquedaEnAnchura(detallado=True)
-    #b_anchura.buscar(ProblemaHitori)
-    #b_profundidad = busqueda_estados.BúsquedaEnProfundidad(detallado=True)
-    #b_profundidad.buscar(b_profundidad)
-    #b_óptima = busqueda_estados.BúsquedaÓptima()
-    #b_óptima.buscar(problemaHitori)
+    # problemaHiroti = problema_estados.ProblemaEspacioEstados(acciones, estado_inicial, estados_finales);
+    # b_anchura = busqueda_estados.BúsquedaEnAnchura(detallado=True)
+    # b_anchura.buscar(ProblemaHitori)
+    # b_profundidad = busqueda_estados.BúsquedaEnProfundidad(detallado=True)
+    # b_profundidad.buscar(b_profundidad)
+    # b_óptima = busqueda_estados.BúsquedaÓptima()
+    # b_óptima.buscar(problemaHitori)
+
     
 def cargarVariablesGlobales(fil, col, tipo):
     global filas
