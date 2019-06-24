@@ -8,8 +8,10 @@ from tkinter import *
 from tkinter.ttk import *
 import random
 from datetime import datetime
-import time
+import time 
 import ast
+import búsqueda_espacio_estados as busqueda_estados
+import problema_espacio_estados as problema_estados
 
 # Variables Globales
 filas = 0
@@ -136,10 +138,14 @@ def init():
 
 def resolverHitori():
     print(tipoBusqueda)
-    time.sleep(5)
-    # TODO HEURISTICAS
-
-
+    #problemaHiroti = problema_estados.ProblemaEspacioEstados(acciones, estado_inicial, estados_finales);
+    #b_anchura = busqueda_estados.BúsquedaEnAnchura(detallado=True)
+    #b_anchura.buscar(ProblemaHitori)
+    #b_profundidad = busqueda_estados.BúsquedaEnProfundidad(detallado=True)
+    #b_profundidad.buscar(b_profundidad)
+    #b_óptima = busqueda_estados.BúsquedaÓptima()
+    #b_óptima.buscar(problemaHitori)
+    
 def cargarVariablesGlobales(fil, col, tipo):
     global filas
     global columnas
@@ -173,9 +179,9 @@ def cargarTableroFichero(ruta, lineaSeleccionada, tipoBusqueda):
     lineaLectura = 1
     for linea in fichero:
         if lineaLectura == int(lineaSeleccionada):
-             tablero = ast.literal_eval(linea)
-             break
-        else:
+            tablero = ast.literal_eval(linea)
+            break
+        else: 
             lineaLectura = lineaLectura + 1 
             
     tamColumna = len(tablero[0])
@@ -183,6 +189,7 @@ def cargarTableroFichero(ruta, lineaSeleccionada, tipoBusqueda):
     cargarVariablesGlobales(tamColumna, tamFila, tipoBusqueda)
     displayTablero()
     return True
+
 
 if __name__ == '__main__':
 
