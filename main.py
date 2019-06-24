@@ -8,8 +8,10 @@ from tkinter import *
 from tkinter.ttk import *
 import random
 from datetime import datetime
-import time
+import time 
 import ast
+import b�squeda_espacio_estados as busqueda_estados
+import problema_espacio_estados as problema_estados
 
 # Variables Globales
 filas = 0
@@ -136,10 +138,14 @@ def init():
 
 def resolverHitori():
     print(tipoBusqueda)
-    time.sleep(5)
-    # TODO HEURISTICAS
-
-
+    #problemaHiroti = problema_estados.ProblemaEspacioEstados(acciones, estado_inicial, estados_finales);
+    #b_anchura = busqueda_estados.BúsquedaEnAnchura(detallado=True)
+    #b_anchura.buscar(ProblemaHitori)
+    #b_profundidad = busqueda_estados.BúsquedaEnProfundidad(detallado=True)
+    #b_profundidad.buscar(b_profundidad)
+    #b_óptima = busqueda_estados.BúsquedaÓptima()
+    #b_óptima.buscar(problemaHitori)
+    
 def cargarVariablesGlobales(fil, col, tipo):
     global filas
     global columnas
@@ -173,9 +179,9 @@ def cargarTableroFichero(ruta, lineaSeleccionada, tipoBusqueda):
     lineaLectura = 1
     for linea in fichero:
         if lineaLectura == int(lineaSeleccionada):
-             tablero = ast.literal_eval(linea)
-             break
-        else:
+            tablero = ast.literal_eval(linea)
+            break
+        else: 
             lineaLectura = lineaLectura + 1 
             
     tamColumna = len(tablero[0])
@@ -184,6 +190,53 @@ def cargarTableroFichero(ruta, lineaSeleccionada, tipoBusqueda):
     displayTablero()
     return True
 
+
+def esSolucion():
+    return comprobacionPorColumnas() and comprobacionPorFilas()
+
+
+def comprobacionPorFilas():
+    solucion = True
+    cantidadNumerosPorPosicion = []
+    sumatorios = {1:sumar(0, cantidadNumerosPorPosicion), 2:sumar(1, cantidadNumerosPorPosicion), 3:sumar(2, cantidadNumerosPorPosicion), 4:sumar(3, cantidadNumerosPorPosicion), 5:sumar(4, cantidadNumerosPorPosicion), 6:sumar(5, cantidadNumerosPorPosicion), 7:sumar(6, cantidadNumerosPorPosicion), 8:sumar(7, cantidadNumerosPorPosicion), 9:sumar(8, cantidadNumerosPorPosicion)}
+    for fila in tablero:
+        cantidadNumerosPorPosicion = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        if not solucion:
+            return solucion
+            break
+        for numero in fila:
+            if not numero == 0:
+                sumatorios[numero]
+        for cantidad in cantidadNumerosPorPosicion: 
+            if cantidad > 1:
+                solucion = False
+                break
+    return solucion
+
+
+def comprobacionPorColumnas():
+    solucion = True
+    cantidadNumerosPorPosicion = []
+    sumatorios = {1:sumar(0, cantidadNumerosPorPosicion), 2:sumar(1, cantidadNumerosPorPosicion), 3:sumar(2, cantidadNumerosPorPosicion), 4:sumar(3, cantidadNumerosPorPosicion), 5:sumar(4, cantidadNumerosPorPosicion), 6:sumar(5, cantidadNumerosPorPosicion), 7:sumar(6, cantidadNumerosPorPosicion), 8:sumar(7, cantidadNumerosPorPosicion), 9:sumar(8, cantidadNumerosPorPosicion)}
+    for columna in range(columnas):
+        cantidadNumerosPorPosicion = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        if not solucion:
+            return solucion
+            break
+        for fila in tablero:
+            if not fila[columna] == 0:
+                sumatorios[fila[columna]]
+        for cantidad in cantidadNumerosPorPosicion: 
+            if cantidad > 1:
+                solucion = False
+                break
+    return solucion
+
+
+def sumar(posicion, cantidadNumerosPorPosicion):
+    cantidadNumerosPorPosicion[posicion] = cantidadNumerosPorPosicion[posicion] + 1
+    
+    
 if __name__ == '__main__':
 
     def reset():
