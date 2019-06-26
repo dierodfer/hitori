@@ -1,22 +1,11 @@
 import objetos as Objetos
 import problema_espacio_estados as problema
 
-tablero = Objetos.Tablero([[3,9,1],[1,7,2],[8,2,3]])
+tablero = Objetos.Tablero([[0,9,5,6,7],[1,1,2,0,2],[0,2,0,3,4],[7,0,7,4,1],[5,2,6,1,2]])
 tablero2 = [[3,9,1],[1,7,2],[8,2,3]]
+tablero3 = Objetos.Tablero([[1,9,5,6,0],[1,7,2,0,2],[7,2,1,3,4],[7,5,7,0,1],[5,2,6,1,0]])
 
-def init():
-    hola = tablero.set_celda(1, 1, 79878)
-    print(hola)
-    print(tablero)  
-    result = list(zip(*tablero2))
-    print(result)
-    
-
-if __name__ == '__main__':
-        
-    init()
-
-class BloquearCasilla(problema.Accion):
+class BloquearCasilla:
     def __init__(self, i, j):
         nombre = 'Bloquear casilla {}'.format(i, j)
         super().__init__(nombre)
@@ -33,12 +22,36 @@ class BloquearCasilla(problema.Accion):
     def esBorde(self, estado, f, c):
         return (f+1 == estado.tamaño_hor() or c+1 == estado.tamaño_ver() or  f == 0 or  c == 0)
     
-    #Restricción temporal, esta comprueba que no se cierren caminos, es poco efectiva
-    def cumpleRestriccionDeCamino(self,estado,f,c):
-        if self.esBorde(self,estado,f,c):
-            return (not self.tieneAdyacentesBloqueadas(self,estado,f,c))
+    #Sigue el camino de adyacentes diagolanales comprobando que no cierra el zurco
+    def cumpleRestriccionDeCamino(self,estado,f,c, filaAnterior=-1, columnaAnterior=-1):
+        self.adyacentesDiagonales = self.getAdyacentesDiagonales(estado, f, c)
+        
+        #No es primera iteracion borra la casilla bloqueada anterior
+        if(self.adyacentesDiagonales.count([filaAnterior,columnaAnterior]) == 1):
+            self.adyacentesDiagonales.remove([filaAnterior,columnaAnterior])
+            
+        if((len(self.adyacentesDiagonales) == 1) & (not self.esBorde(estado, f, c)) & (filaAnterior == -1)):
+            return True
+        
+        if(len(self.adyacentesDiagonales) == 0):
+            #Es primera iteracion
+            if(filaAnterior == -1):
+                return True
+            #No es primera iteración
+            else: 
+                if(self.esBorde(estado, f, c)):
+                    return False
+                else:
+                    return True
         else:
-            return (self.numeroAdyacentesDiagonalesBloqueadas(self,estado,f,c) < 2)
+            caminosCumplidos = 0
+            for nuevaCasilla in self.adyacentesDiagonales: 
+                caminosCumplidos += self.cumpleRestriccionDeCamino2(estado, nuevaCasilla[0], nuevaCasilla[1], f, c)
+            #Modificar para solucionar el problema de mas de 2 caminos
+            if(caminosCumplidos == 0):
+                return False
+            else:
+                return True      
     
     #Contiene una celda bloqueada directamente al lado
     def tieneAdyacentesEnCruzBloqueados(self,estado,f,c):
@@ -52,7 +65,19 @@ class BloquearCasilla(problema.Accion):
                 or (estado.get_celda(f+1,c-1) == 0) 
                 or (estado.get_celda(f-1,c+1) == 0) 
                 or (estado.get_celda(f-1,c-1) == 0))
-    
+        
+    def getAdyacentesDiagonales(self,estado,f,c):
+        res= []
+        if(estado.get_celda(f+1,c+1) == 0):
+            res.append([f+1,c+1])
+        if(estado.get_celda(f+1,c-1) == 0):
+            res.append([f+1,c-1])
+        if(estado.get_celda(f-1,c+1) == 0):
+            res.append([f-1,c+1])
+        if(estado.get_celda(f-1,c-1) == 0):
+            res.append([f-1,c-1])
+        return res
+        
     def numeroAdyacentesDiagonalesBloqueadas(self,estado,f,c):
         res = []
         res.append(estado.get_celda(f+1,c+1) == 0)
@@ -69,7 +94,10 @@ class BloquearCasilla(problema.Accion):
         nuevo_estado = estado.set_celda(f,c,0)
         return nuevo_estado
     
-class DesbloquearCasilla(problema.Accion):
+    def __str__(self):
+        return 'Acción: {}'.format(self.nombre)
+    
+class DesbloquearCasilla:
     def __init__(self, i, j, nuevoValor):
         nombre = 'Desbloquear casilla {}'.format(i, j)
         super().__init__(nombre)

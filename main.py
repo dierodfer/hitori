@@ -10,7 +10,8 @@ import random
 from datetime import datetime
 import time 
 import ast
-import búqueda_espacio_estados as busqueda_estados
+import hitori as problema_hitori
+import busqueda_espacio_estados as busqueda_estados
 import problema_espacio_estados as problema_estados
 
 # Variables Globales
@@ -138,9 +139,9 @@ def init():
 
 def resolverHitori():
     print(tipoBusqueda)
-    # problemaHiroti = problema_estados.ProblemaEspacioEstados(acciones, estado_inicial, estados_finales);
-    # b_anchura = busqueda_estados.BúsquedaEnAnchura(detallado=True)
-    # b_anchura.buscar(ProblemaHitori)
+    problemaHiroti = problema_hitori.ProblemaEspacioEstadosHitori([problema_hitori.BloquearCasilla], tablero);
+    b_anchura = busqueda_estados.BúsquedaEnAnchura(detallado=True)
+    b_anchura.buscar(problemaHiroti)
     # b_profundidad = busqueda_estados.BúsquedaEnProfundidad(detallado=True)
     # b_profundidad.buscar(b_profundidad)
     # b_óptima = busqueda_estados.BúsquedaÓptima()
