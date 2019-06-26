@@ -10,7 +10,7 @@ import random
 from datetime import datetime
 import time 
 import ast
-import búsqueda_espacio_estados as busqueda_estados
+import bÃºqueda_espacio_estados as busqueda_estados
 import problema_espacio_estados as problema_estados
 
 # Variables Globales
