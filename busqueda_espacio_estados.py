@@ -31,7 +31,7 @@ class ColaNodosConPrioridad:
         self.nodo_generado = 0
 
     def añadir(self, nodo):
-        heapq.heappush(self.nodos, (nodo.heurística, self.nodo_generado, nodo))
+        heapq.heappush(self.nodos, (nodo.heuristica, self.nodo_generado, nodo))
         self.nodo_generado += 1
 
     def sacar(self):
@@ -45,29 +45,29 @@ class ColaNodosConPrioridad:
 
     def __contains__(self, nodo):
         return any(x[2].estado == nodo.estado and
-                   x[2].heurística <= nodo.heurística
+                   x[2].heuristica <= nodo.heuristica
                    for x in self.nodos)
 
 
 class NodoSimple:
-    def __init__(self, estado, padre=None, acción=None):
+    def __init__(self, estado, padre=None, accion=None):
         self.estado = estado
         self.padre = padre
-        self.acción = acción
+        self.accion = accion
 
-    def es_raíz(self):
+    def es_raiz(self):
         return self.padre is None
 
-    def sucesor(self, acción):
+    def sucesor(self, accion):
         Nodo = self.__class__
-        return Nodo(acción.aplicar(self.estado), self, acción)
+        return Nodo(accion.aplicar(self.estado), self, accion)
 
-    def solución(self):
-        if self.es_raíz():
+    def solucion(self):
+        if self.es_raiz():
             acciones = []
         else:
-            acciones = self.padre.solución()
-            acciones.append(self.acción.nombre)
+            acciones = self.padre.solucion()
+            acciones.append(self.accion.nombre)
         return acciones
 
     def __str__(self):
@@ -75,9 +75,9 @@ class NodoSimple:
 
 
 class NodoConProfundidad(NodoSimple):
-    def __init__(self, estado, padre=None, acción=None):
-        super().__init__(estado, padre, acción)
-        if self.es_raíz():
+    def __init__(self, estado, padre=None, accion=None):
+        super().__init__(estado, padre, accion)
+        if self.es_raiz():
             self.profundidad = 0
         else:
             self.profundidad = padre.profundidad + 1
@@ -86,16 +86,16 @@ class NodoConProfundidad(NodoSimple):
         return 'Estado: {0}; Prof: {1}'.format(self.estado, self.profundidad)
 
 
-class NodoConHeurística(NodoSimple):
-    def __init__(self, estado, padre=None, acción=None):
-        super().__init__(estado, padre, acción)
-        if self.es_raíz():
+class NodoConHeuristica(NodoSimple):
+    def __init__(self, estado, padre=None, accion=None):
+        super().__init__(estado, padre, accion)
+        if self.es_raiz():
             self.profundidad = 0
             self.coste = 0
         else:
             self.profundidad = padre.profundidad + 1
-            self.coste = padre.coste + acción.coste_de_aplicar(padre.estado)
-        self.heurística = self.f(self)
+            self.coste = padre.coste + accion.coste_de_aplicar(padre.estado)
+        self.heuristica = self.f(self)
 
     @staticmethod
     def f(nodo):
@@ -103,10 +103,10 @@ class NodoConHeurística(NodoSimple):
 
     def __str__(self):
         return 'Estado: {0}; Prof: {1}; Heur: {2}; Coste: {3}'.format(
-            self.estado, self.profundidad, self.heurística, self.coste)
+            self.estado, self.profundidad, self.heuristica, self.coste)
 
 
-class BúsquedaGeneral:
+class BusquedaGeneral:
     def __init__(self, detallado=False):
         self.detallado = detallado
         if self.detallado:
@@ -119,8 +119,8 @@ class BúsquedaGeneral:
         return True
 
     def expandir_nodo(self, nodo, problema):
-        return (nodo.sucesor(acción)
-                for acción in problema.acciones_aplicables(nodo.estado))
+        return (nodo.sucesor(accion)
+                for accion in problema.acciones_aplicables(nodo.estado))
 
     def es_nuevo(self, nodo):
         return (nodo not in self.frontera and
@@ -137,7 +137,7 @@ class BúsquedaGeneral:
             if self.detallado:
                 print('{0}Nodo: {1}'.format('  ' * nodo.profundidad, nodo))
             if problema.es_estado_final(nodo.estado):
-                return nodo.solución()
+                return nodo.solucion()
             self.explorados.añadir(nodo)
             if self.es_expandible(nodo):
                 nodos_hijos = self.expandir_nodo(nodo, problema)
@@ -146,13 +146,13 @@ class BúsquedaGeneral:
                         self.frontera.añadir(nodo_hijo)
 
 
-class BúsquedaEnAnchura(BúsquedaGeneral):
+class BusquedaEnAnchura(BusquedaGeneral):
     def __init__(self, detallado=False):
         super().__init__(detallado)
         self.frontera = ColaNodos()
 
 
-class BúsquedaEnProfundidad(BúsquedaGeneral):
+class BusquedaEnProfundidad(BusquedaGeneral):
     def __init__(self, detallado=False):
         super().__init__(detallado)
         self.frontera = PilaNodos()
@@ -161,16 +161,16 @@ class BúsquedaEnProfundidad(BúsquedaGeneral):
         def añadir_vaciando_rama(self, nodo):
             if self:
                 while True:
-                    último_nodo = self.pop()
-                    if último_nodo == nodo.padre:
-                        self.append(último_nodo)
+                    ultimo_nodo = self.pop()
+                    if ultimo_nodo == nodo.padre:
+                        self.append(ultimo_nodo)
                         break
             self.append(nodo)
         self.explorados.añadir = types.MethodType(añadir_vaciando_rama,
                                                   self.explorados)
 
 
-class BúsquedaEnProfundidadAcotada(BúsquedaEnProfundidad):
+class BusquedaEnProfundidadAcotada(BusquedaEnProfundidad):
     def __init__(self, cota, detallado=False):
         super().__init__(detallado)
         self.Nodo = NodoConProfundidad
@@ -180,7 +180,7 @@ class BúsquedaEnProfundidadAcotada(BúsquedaEnProfundidad):
         return nodo.profundidad < self.cota
 
 
-class BúsquedaEnProfundidadIterativa:
+class BusquedaEnProfundidadIterativa:
     def __init__(self, cota_final, cota_inicial=0, detallado=False):
         self.cota_inicial = cota_inicial
         self.cota_final = cota_final
@@ -188,34 +188,34 @@ class BúsquedaEnProfundidadIterativa:
 
     def buscar(self, problema):
         for cota in range(self.cota_inicial, self.cota_final):
-            bpa = BúsquedaEnProfundidadAcotada(cota, self.detallado)
-            solución = bpa.buscar(problema)
-            if solución:
-                return solución
+            bpa = BusquedaEnProfundidadAcotada(cota, self.detallado)
+            solucion = bpa.buscar(problema)
+            if solucion:
+                return solucion
 
 
-class BúsquedaPrimeroElMejor(BúsquedaGeneral):
+class BusquedaPrimeroElMejor(BusquedaGeneral):
     def __init__(self, f, detallado=False):
         super().__init__(detallado)
-        self.Nodo = NodoConHeurística
+        self.Nodo = NodoConHeuristica
         self.Nodo.f = staticmethod(f)
         self.frontera = ColaNodosConPrioridad()
         self.explorados = ListaNodos()
         self.explorados.__contains__ = types.MethodType(
             lambda self, nodo: any(x.estado == nodo.estado and
-                                   x.heurística <= nodo.heurística
+                                   x.heuristica <= nodo.heuristica
                                    for x in self),
             self.explorados)
 
 
-class BúsquedaÓptima(BúsquedaPrimeroElMejor):
+class Busquedaoptima(BusquedaPrimeroElMejor):
     def __init__(self, detallado=False):
         def coste(nodo):
             return nodo.coste
         super().__init__(coste, detallado)
 
 
-class BúsquedaAEstrella(BúsquedaPrimeroElMejor):
+class BusquedaAEstrella(BusquedaPrimeroElMejor):
     def __init__(self, h, detallado=False):
         def coste(nodo):
             return nodo.coste
