@@ -12,7 +12,6 @@ import time
 import ast
 import hitori as problema_hitori
 import busqueda_espacio_estados as busqueda_estados
-import problema_espacio_estados as problema_estados
 
 # Variables Globales
 filas = 0
@@ -140,7 +139,7 @@ def init():
 def resolverHitori():
     print(tipoBusqueda)
     problemaHiroti = problema_hitori.ProblemaEspacioEstadosHitori([problema_hitori.BloquearCasilla], tablero);
-    b_anchura = busqueda_estados.BúsquedaEnAnchura(detallado=True)
+    b_anchura = busqueda_estados.BusquedaEnAnchura(detallado=True)
     b_anchura.buscar(problemaHiroti)
     # b_profundidad = busqueda_estados.BúsquedaEnProfundidad(detallado=True)
     # b_profundidad.buscar(b_profundidad)

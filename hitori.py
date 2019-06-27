@@ -1,5 +1,4 @@
 import objetos as Objetos
-import problema_espacio_estados as problema
 
 tablero = Objetos.Tablero([[0,9,5,6,7],[1,1,2,0,2],[0,2,0,3,4],[7,0,7,4,1],[5,2,6,1,2]])
 tablero2 = [[3,9,1],[1,7,2],[8,2,3]]
