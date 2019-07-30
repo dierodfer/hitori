@@ -12,11 +12,12 @@ import time
 import ast
 import hitori as problema_hitori
 import busqueda_espacio_estados as busqueda_estados
+import objetos as Objetos
 
 # Variables Globales
 filas = 0
 columnas = 0
-tipoBusqueda = 'Tipo Busqueda 1'
+tipoBusqueda = 'Busqueda en Anchura'
 tablero = []
 
 
@@ -48,7 +49,7 @@ def init():
     inputFilas = Entry(window, width=4)
     inputColumnas = Entry(window, width=4)
     inputTipo = Combobox(window)
-    inputTipo['values'] = ('Tipo busqueda 1', 'Tipo busqueda 2', 'Tipo busqueda 3', 'Tipo busqueda 4')
+    inputTipo['values'] = ('Busqueda en Anchura', 'Busqueda en profundidad', 'Busqueda optima', 'Busqueda A*')
     inputTipo.current(0)
     
     # Muestra el error enviado
@@ -138,7 +139,13 @@ def init():
 
 def resolverHitori():
     print(tipoBusqueda)
-    problemaHiroti = problema_hitori.ProblemaEspacioEstadosHitori([problema_hitori.BloquearCasilla], tablero);
+    acciones = []
+   
+    for posicion in getPosisionesCasillasRepetidas(Objetos.Tablero(tablero)):
+        acciones.append(problema_hitori.BloquearCasilla(posicion[0],posicion[1]))
+    
+    print(acciones)
+    problemaHiroti = problema_hitori.ProblemaEspacioEstadosHitori(acciones, tablero);
     b_anchura = busqueda_estados.BusquedaEnAnchura(detallado=True)
     b_anchura.buscar(problemaHiroti)
     # b_profundidad = busqueda_estados.BúsquedaEnProfundidad(detallado=True)
@@ -237,6 +244,39 @@ def comprobacionPorColumnas():
 def sumar(posicion, cantidadNumerosPorPosicion):
     cantidadNumerosPorPosicion[posicion] = cantidadNumerosPorPosicion[posicion] + 1
     
+    
+def getPosisionesCasillasRepetidas(estado):
+    res = []
+    listaColumnas = devuelveRepetidasColumnas(estado)
+    listaFilas = devuelveRepetidasFilas(estado)
+    listaColumnas.__add__(listaFilas)
+    for i in listaColumnas:
+        if i not in res:
+            res.append(i)
+    return res
+
+def devuelveRepetidasFilas(estado):
+    res = []
+    for fila in range(0, estado.tamaño_hor()):
+        for valorFila in [1,2,3,4,5,6,7,8,9]:       
+            valoresFila = estado.get_Fila(fila)
+            if (valoresFila.count(valorFila) > 1):
+                for columna in range(0, estado.tamaño_hor()):
+                    if(estado.get_celda(fila,columna) == valorFila):
+                        res.append([fila,columna])
+    return res
+
+def devuelveRepetidasColumnas(estado):
+    transpuesta = estado.get_traspuesta()
+    res = []
+    for columna in range(0, transpuesta.tamaño_hor()):
+        for valorColumna in [1,2,3,4,5,6,7,8,9]:       
+            valoresColumna = transpuesta.get_Fila(columna)
+            if (valoresColumna.count(valorColumna) > 1):
+                for fila in range(0, transpuesta.tamaño_hor()):
+                    if(transpuesta.get_celda(columna,fila) == valorColumna):
+                        res.append([fila,columna])
+    return res
     
 if __name__ == '__main__':
 

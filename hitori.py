@@ -3,11 +3,11 @@ import objetos as Objetos
 tablero = Objetos.Tablero([[0,9,5,6,7],[1,1,2,0,2],[0,2,0,3,4],[7,0,7,4,1],[5,2,6,1,2]])
 tablero2 = Objetos.Tablero([[3,9,3],[3,7,2],[8,2,3]])
 tablero3 = Objetos.Tablero([[1,9,5,6,0],[1,7,2,0,2],[7,2,1,3,4],[7,5,7,0,1],[5,2,6,1,0]])
+tablero4 = Objetos.Tablero([[0, 1, 0, 7, 1], [6, 2, 4, 6, 0], [6, 7, 6, 8, 8], [7, 0, 1, 1, 7], [1, 3, 0, 2, 0]])
 
 class BloquearCasilla:
     def __init__(self, i, j):
-        nombre = 'Bloquear casilla {}'.format(i, j)
-        super().__init__(nombre)
+        self.nombre = 'Bloquear casilla {}'.format(i, j)
         self.f = i
         self.c = j
         self.coste = 1
@@ -45,7 +45,7 @@ class BloquearCasilla:
         else:
             caminosCumplidos = 0
             for nuevaCasilla in self.adyacentesDiagonales: 
-                caminosCumplidos += self.cumpleRestriccionDeCamino2(estado, nuevaCasilla[0], nuevaCasilla[1], f, c)
+                caminosCumplidos += self.cumpleRestriccionDeCamino(estado, nuevaCasilla[0], nuevaCasilla[1], f, c)
             #Modificar para solucionar el problema de mas de 2 caminos
             if(caminosCumplidos == 0):
                 return False
@@ -77,20 +77,20 @@ class BloquearCasilla:
             res.append([f-1,c-1])
         return res
         
-    def numeroAdyacentesDiagonalesBloqueadas(self,estado,f,c):
-        res = []
-        res.append(estado.get_celda(f+1,c+1) == 0)
-        res.append(estado.get_celda(f-1,c+1) == 0)
-        res.append(estado.get_celda(f+1,c-1) == 0)
-        res.append(estado.get_celda(f-1,c-1) == 0)
-        return sum(res);
+    #def numeroAdyacentesDiagonalesBloqueadas(self,estado,f,c):
+        # res = []
+        #res.append(estado.get_celda(f+1,c+1) == 0)
+        #res.append(estado.get_celda(f-1,c+1) == 0)
+        #res.append(estado.get_celda(f+1,c-1) == 0)
+        #res.append(estado.get_celda(f-1,c-1) == 0)
+        #return sum(res);
     
-    def es_aplicable(self, estado, f,c):
-        return (self.estaEnRango(estado, f, c) and self.noEstaBloqueada(estado, f, c) 
-                and (not self.tieneAdyacentesEnCruzBloqueados(estado,f,c)) and self.cumpleRestriccionDeCamino(estado, f, c))
+    def es_aplicable(self, estado):
+        return (self.estaEnRango(estado, self.f, self.c) and self.noEstaBloqueada(estado, self.f, self.c) 
+                and (not self.tieneAdyacentesEnCruzBloqueados(estado,self.f,self.c)) and self.cumpleRestriccionDeCamino(estado, self.f, self.c))
     
-    def aplicar(self, estado,f,c):
-        nuevo_estado = estado.set_celda(f,c,0)
+    def aplicar(self, estado):
+        nuevo_estado = estado.set_celda(self.f,self.c,0)
         return nuevo_estado
     
     def __str__(self):
@@ -129,56 +129,18 @@ class ProblemaEspacioEstadosHitori:
         return (acción
                 for acción in self.acciones
                 if acción.es_aplicable(estado))
-        
-    def getPosisionesCasillasRepetidas(self, estado):
-        res = []
-        
-        listaColumnas = self.devuelveRepetidasColumnas(estado)
-        listaFilas = self.devuelveRepetidasFilas(estado)
-        listaColumnas.__add__(listaFilas)
-    
-        for i in listaColumnas:
-            if i not in res:
-                res.append(i)
-        return res
     
     def comprobacionPorFilas(self, estado):
-        for fila in range(0, estado.tamaño_hor()-1):
+        for fila in range(0, estado.tamaño_hor()):
             for f in [1,2,3,4,5,6,7,8,9]:       
                 if (estado.get_Fila(fila).count(f) > 1):
                     return False
         return True
-    
-    def devuelveRepetidasFilas(self, estado):
-        res = []
-        for fila in range(0, estado.tamaño_hor()):
-            for valorFila in [1,2,3,4,5,6,7,8,9]:       
-                valoresFila = estado.get_Fila(fila)
-                if (valoresFila.count(valorFila) > 1):
-                    for columna in range(0, estado.tamaño_hor()):
-                        if(estado.get_celda(fila,columna) == valorFila):
-                            res.append([fila,columna])
-        return res
-    
-    def devuelveRepetidasColumnas(self, estado):
-        transpuesta = estado.get_traspuesta()
-        res = []
-        for columna in range(0, transpuesta.tamaño_hor()):
-            for valorColumna in [1,2,3,4,5,6,7,8,9]:       
-                valoresColumna = transpuesta.get_Fila(columna)
-                if (valoresColumna.count(valorColumna) > 1):
-                    for fila in range(0, transpuesta.tamaño_hor()):
-                        if(transpuesta.get_celda(columna,fila) == valorColumna):
-                            res.append([fila,columna])
-        return res
 
     def comprobacionPorColumnas(self, estado):
         transpuesta = estado.get_traspuesta()
-        for columna in range(0, transpuesta.tamaño_hor()-1):
+        for columna in range(0, transpuesta.tamaño_hor()):
             for c in [1,2,3,4,5,6,7,8,9]:
                 if (transpuesta.get_Fila(columna).count(c) > 1):
                     return False
         return True
-        
-        
-#SE DEBE DE AÑADIR LA FORMA DE INDICARLA EL ALGORITMO CUANDO USAR BLOQUEAR Y DESBLOQUEAR CASILLA
