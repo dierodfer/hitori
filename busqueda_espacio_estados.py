@@ -1,6 +1,7 @@
 import collections
 import heapq
 import types
+from telnetlib import NOP
 
 
 class ListaNodos(collections.deque):
@@ -136,8 +137,10 @@ class BusquedaGeneral:
             nodo = self.frontera.sacar()
             if self.detallado:
                 print('{0}Nodo: {1}'.format('  ' * nodo.profundidad, nodo))
+                
             if problema.es_estado_final(nodo.estado):
                 return nodo.solucion()
+            
             self.explorados.add(nodo)
             if self.es_expandible(nodo):
                 nodos_hijos = self.expandir_nodo(nodo, problema)
@@ -166,7 +169,7 @@ class BusquedaEnProfundidad(BusquedaGeneral):
                         self.append(ultimo_nodo)
                         break
             self.append(nodo)
-        self.explorados.add = types.MethodType(aa_vaciando_rama,
+        self.explorados.add = types.MethodType(add_vaciando_rama,
                                                   self.explorados)
 
 

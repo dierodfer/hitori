@@ -7,7 +7,7 @@ tablero4 = Objetos.Tablero([[0, 1, 0, 7, 1], [6, 2, 4, 6, 0], [6, 7, 6, 8, 8], [
 
 class BloquearCasilla:
     def __init__(self, i, j):
-        self.nombre = 'Bloquear casilla {}'.format(i, j)
+        self.nombre = 'Bloquear casilla ({},{})'.format(i+1, j+1)
         self.f = i
         self.c = j
         self.coste = 1
@@ -98,7 +98,7 @@ class BloquearCasilla:
     
 class DesbloquearCasilla:
     def __init__(self, i, j, nuevoValor):
-        nombre = 'Desbloquear casilla {}'.format(i, j)
+        nombre = 'Desbloquear casilla ({},{})'.format(i+1, j+1)
         super().__init__(nombre)
         self.f = i
         self.c = j

@@ -17,7 +17,7 @@ import objetos as Objetos
 # Variables Globales
 filas = 0
 columnas = 0
-tipoBusqueda = 'Busqueda en Anchura'
+tipoBusqueda = 'Busqueda en anchura'
 tablero = []
 
 
@@ -49,7 +49,7 @@ def init():
     inputFilas = Entry(window, width=4)
     inputColumnas = Entry(window, width=4)
     inputTipo = Combobox(window)
-    inputTipo['values'] = ('Busqueda en Anchura', 'Busqueda en profundidad', 'Busqueda optima', 'Busqueda A*')
+    inputTipo['values'] = ('Busqueda en anchura', 'Busqueda en profundidad', 'Busqueda optima', 'Busqueda A*')
     inputTipo.current(0)
     
     # Muestra el error enviado
@@ -144,14 +144,19 @@ def resolverHitori():
     for posicion in getPosisionesCasillasRepetidas(Objetos.Tablero(tablero)):
         acciones.append(problema_hitori.BloquearCasilla(posicion[0],posicion[1]))
     
-    print(acciones)
     problemaHiroti = problema_hitori.ProblemaEspacioEstadosHitori(acciones, tablero);
-    b_anchura = busqueda_estados.BusquedaEnAnchura(detallado=True)
-    b_anchura.buscar(problemaHiroti)
-    # b_profundidad = busqueda_estados.BusquedaEnProfundidad(detallado=True)
-    # b_profundidad.buscar(b_profundidad)
-    # b_optima = busqueda_estados.BusquedaOptima()
-    # b_optima.buscar(problemaHitori)
+    
+    if(tipoBusqueda == 'Busqueda en anchura'):
+        b_anchura = busqueda_estados.BusquedaEnAnchura(detallado=False)
+        print(b_anchura.buscar(problemaHiroti))
+    if(tipoBusqueda == 'Busqueda en profundidad'):
+        b_profundidad = busqueda_estados.BusquedaEnProfundidad(detallado=False)
+        print (b_profundidad.buscar(problemaHiroti))
+    if(tipoBusqueda == 'Busqueda optima'):
+        b_optima = busqueda_estados.Busquedaoptima(detallado=False)
+        print (b_optima.buscar(problemaHiroti))
+    if(tipoBusqueda == 'Busqueda A*'):
+        print('hola')
 
     
 def cargarVariablesGlobales(fil, col, tipo):
@@ -169,7 +174,7 @@ def createRandomTablero():
     for f in range(filas):
         arrayColumnas = []
         for c in range(columnas):
-            arrayColumnas.append(random.randrange(1, 9))
+            arrayColumnas.append(random.randrange(1, 10))
         tablero.append(arrayColumnas)
 
 

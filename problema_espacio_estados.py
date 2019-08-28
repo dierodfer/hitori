@@ -16,7 +16,7 @@ class Accion:
     def aplicar(self, estado):
         if self.aplicar is None:
             raise NotImplementedError(
-                'Aplicacion de la accian no implementada')
+                'Aplicacion de la accion no implementada')
         else:
             return self.aplicacion(estado)
 
