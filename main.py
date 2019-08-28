@@ -141,8 +141,9 @@ def resolverHitori():
     print(tipoBusqueda)
     acciones = []
    
+    table = Objetos.Tablero(tablero)
     for posicion in getPosisionesCasillasRepetidas(Objetos.Tablero(tablero)):
-        acciones.append(problema_hitori.BloquearCasilla(posicion[0],posicion[1]))
+        acciones.append(problema_hitori.BloquearCasilla(posicion[0],posicion[1], table.get_coste_celda(posicion[0],posicion[1])))
     
     problemaHiroti = problema_hitori.ProblemaEspacioEstadosHitori(acciones, tablero);
     
@@ -153,9 +154,10 @@ def resolverHitori():
         b_profundidad = busqueda_estados.BusquedaEnProfundidad(detallado=False)
         print (b_profundidad.buscar(problemaHiroti))
     if(tipoBusqueda == 'Busqueda optima'):
-        b_optima = busqueda_estados.Busquedaoptima(detallado=False)
+        b_optima = busqueda_estados.Busquedaoptima()
         print (b_optima.buscar(problemaHiroti))
     if(tipoBusqueda == 'Busqueda A*'):
+        #TODO 
         print('hola')
 
     
@@ -204,46 +206,46 @@ def cargarTableroFichero(ruta, lineaSeleccionada, tipoBusqueda):
     return True
 
 
-def esSolucion():
-    return comprobacionPorColumnas() and comprobacionPorFilas()
-
-
-def comprobacionPorFilas():
-    solucion = True
-    cantidadNumerosPorPosicion = []
-    sumatorios = {1:sumar(0, cantidadNumerosPorPosicion), 2:sumar(1, cantidadNumerosPorPosicion), 3:sumar(2, cantidadNumerosPorPosicion), 4:sumar(3, cantidadNumerosPorPosicion), 5:sumar(4, cantidadNumerosPorPosicion), 6:sumar(5, cantidadNumerosPorPosicion), 7:sumar(6, cantidadNumerosPorPosicion), 8:sumar(7, cantidadNumerosPorPosicion), 9:sumar(8, cantidadNumerosPorPosicion)}
-    for fila in tablero:
-        cantidadNumerosPorPosicion = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        if not solucion:
-            return solucion
-            break
-        for numero in fila:
-            if not numero == 0:
-                sumatorios[numero]
-        for cantidad in cantidadNumerosPorPosicion: 
-            if cantidad > 1:
-                solucion = False
-                break
-    return solucion
-
-
-def comprobacionPorColumnas():
-    solucion = True
-    cantidadNumerosPorPosicion = []
-    sumatorios = {1:sumar(0, cantidadNumerosPorPosicion), 2:sumar(1, cantidadNumerosPorPosicion), 3:sumar(2, cantidadNumerosPorPosicion), 4:sumar(3, cantidadNumerosPorPosicion), 5:sumar(4, cantidadNumerosPorPosicion), 6:sumar(5, cantidadNumerosPorPosicion), 7:sumar(6, cantidadNumerosPorPosicion), 8:sumar(7, cantidadNumerosPorPosicion), 9:sumar(8, cantidadNumerosPorPosicion)}
-    for columna in range(columnas):
-        cantidadNumerosPorPosicion = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        if not solucion:
-            return solucion
-            break
-        for fila in tablero:
-            if not fila[columna] == 0:
-                sumatorios[fila[columna]]
-        for cantidad in cantidadNumerosPorPosicion: 
-            if cantidad > 1:
-                solucion = False
-                break
-    return solucion
+# def esSolucion():
+#     return comprobacionPorColumnas() and comprobacionPorFilas()
+# 
+# 
+# def comprobacionPorFilas():
+#     solucion = True
+#     cantidadNumerosPorPosicion = []
+#     sumatorios = {1:sumar(0, cantidadNumerosPorPosicion), 2:sumar(1, cantidadNumerosPorPosicion), 3:sumar(2, cantidadNumerosPorPosicion), 4:sumar(3, cantidadNumerosPorPosicion), 5:sumar(4, cantidadNumerosPorPosicion), 6:sumar(5, cantidadNumerosPorPosicion), 7:sumar(6, cantidadNumerosPorPosicion), 8:sumar(7, cantidadNumerosPorPosicion), 9:sumar(8, cantidadNumerosPorPosicion)}
+#     for fila in tablero:
+#         cantidadNumerosPorPosicion = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+#         if not solucion:
+#             return solucion
+#             break
+#         for numero in fila:
+#             if not numero == 0:
+#                 sumatorios[numero]
+#         for cantidad in cantidadNumerosPorPosicion: 
+#             if cantidad > 1:
+#                 solucion = False
+#                 break
+#     return solucion
+# 
+# 
+# def comprobacionPorColumnas():
+#     solucion = True
+#     cantidadNumerosPorPosicion = []
+#     sumatorios = {1:sumar(0, cantidadNumerosPorPosicion), 2:sumar(1, cantidadNumerosPorPosicion), 3:sumar(2, cantidadNumerosPorPosicion), 4:sumar(3, cantidadNumerosPorPosicion), 5:sumar(4, cantidadNumerosPorPosicion), 6:sumar(5, cantidadNumerosPorPosicion), 7:sumar(6, cantidadNumerosPorPosicion), 8:sumar(7, cantidadNumerosPorPosicion), 9:sumar(8, cantidadNumerosPorPosicion)}
+#     for columna in range(columnas):
+#         cantidadNumerosPorPosicion = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+#         if not solucion:
+#             return solucion
+#             break
+#         for fila in tablero:
+#             if not fila[columna] == 0:
+#                 sumatorios[fila[columna]]
+#         for cantidad in cantidadNumerosPorPosicion: 
+#             if cantidad > 1:
+#                 solucion = False
+#                 break
+#     return solucion
 
 
 def sumar(posicion, cantidadNumerosPorPosicion):
@@ -254,8 +256,11 @@ def getPosisionesCasillasRepetidas(estado):
     res = []
     listaColumnas = devuelveRepetidasColumnas(estado)
     listaFilas = devuelveRepetidasFilas(estado)
-    listaColumnas.__add__(listaFilas)
+#     listaColumnas.__add__(listaFilas)
     for i in listaColumnas:
+        if i not in res:
+            res.append(i)
+    for i in listaFilas:
         if i not in res:
             res.append(i)
     return res

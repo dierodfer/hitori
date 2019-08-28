@@ -28,5 +28,12 @@ class Tablero:
         copia[f][c] = nuevoValor
         return Tablero(copia)
     
+    def get_coste_celda(self, fila, columna):
+        valor = self.get_celda(fila, columna)
+        costeFila = estado.get_Fila(fila).count(valor)
+        transpuesta = estado.get_traspuesta()
+        costeColumna = transpuesta.get_Fila(columna).count(valor)
+        return -1 * (costeFila + costeColumna)
+    
     def __str__(self):
         return 'Tablero: {}'.format(self.celdas)

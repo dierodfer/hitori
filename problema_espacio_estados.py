@@ -1,6 +1,5 @@
 class Accion:
-    def __init__(self, nombre='', aplicabilidad=None, aplicacion=None,
-                 coste=None):
+    def __init__(self, nombre='', aplicabilidad=None, aplicacion=None, coste=None):
         self.nombre = nombre
         self.aplicabilidad = aplicabilidad
         self.aplicacion = aplicacion
@@ -37,7 +36,7 @@ class ProblemaEspacioEstados:
         self.acciones = acciones
         self.estado_inicial = estado_inicial
         self.estados_finales = estados_finales
-
+    
     def es_estado_final(self, estado):
         return estado in self.estados_finales
 

@@ -6,11 +6,11 @@ tablero3 = Objetos.Tablero([[1,9,5,6,0],[1,7,2,0,2],[7,2,1,3,4],[7,5,7,0,1],[5,2
 tablero4 = Objetos.Tablero([[0, 1, 0, 7, 1], [6, 2, 4, 6, 0], [6, 7, 6, 8, 8], [7, 0, 1, 1, 7], [1, 3, 0, 2, 0]])
 
 class BloquearCasilla:
-    def __init__(self, i, j):
+    def __init__(self, i, j, cost=1):
         self.nombre = 'Bloquear casilla ({},{})'.format(i+1, j+1)
         self.f = i
         self.c = j
-        self.coste = 1
+        self.coste = cost
     
     def estaEnRango(self, estado, f, c):
         return estado.get_celda(f,c) != -1;
