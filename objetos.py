@@ -4,10 +4,10 @@ class Tablero:
     def __init__(self, celdas):
         self.celdas = celdas
     
-    def tamaño_hor(self):
+    def size_hor(self):
         return len(self.celdas[0])
     
-    def tamaño_ver(self):
+    def size_ver(self):
         return len(self.celdas)
     
     def get_Fila(self, f):
@@ -18,7 +18,7 @@ class Tablero:
     
     def get_celda(self, f, c):
         #devuelve -1 si sale de rango
-        if ((f<0) or (f+1>self.tamaño_hor()) or (c<0) or (c+1>self.tamaño_ver())):
+        if ((f<0) or (f+1>self.size_hor()) or (c<0) or (c+1>self.size_ver())):
             return -1
         else:
             return self.celdas[f][c]

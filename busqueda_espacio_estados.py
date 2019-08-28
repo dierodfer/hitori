@@ -4,7 +4,7 @@ import types
 
 
 class ListaNodos(collections.deque):
-    def añadir(self, nodo):
+    def add(self, nodo):
         self.append(nodo)
 
     def vaciar(self):
@@ -30,7 +30,7 @@ class ColaNodosConPrioridad:
         self.nodos = []
         self.nodo_generado = 0
 
-    def añadir(self, nodo):
+    def add(self, nodo):
         heapq.heappush(self.nodos, (nodo.heuristica, self.nodo_generado, nodo))
         self.nodo_generado += 1
 
@@ -129,7 +129,7 @@ class BusquedaGeneral:
     def buscar(self, problema):
         self.frontera.vaciar()
         self.explorados.vaciar()
-        self.frontera.añadir(self.Nodo(problema.estado_inicial))
+        self.frontera.add(self.Nodo(problema.estado_inicial))
         while True:
             if not self.frontera:
                 return None
@@ -138,12 +138,12 @@ class BusquedaGeneral:
                 print('{0}Nodo: {1}'.format('  ' * nodo.profundidad, nodo))
             if problema.es_estado_final(nodo.estado):
                 return nodo.solucion()
-            self.explorados.añadir(nodo)
+            self.explorados.add(nodo)
             if self.es_expandible(nodo):
                 nodos_hijos = self.expandir_nodo(nodo, problema)
                 for nodo_hijo in nodos_hijos:
                     if self.es_nuevo(nodo_hijo):
-                        self.frontera.añadir(nodo_hijo)
+                        self.frontera.add(nodo_hijo)
 
 
 class BusquedaEnAnchura(BusquedaGeneral):
@@ -158,7 +158,7 @@ class BusquedaEnProfundidad(BusquedaGeneral):
         self.frontera = PilaNodos()
         self.explorados = PilaNodos()
 
-        def añadir_vaciando_rama(self, nodo):
+        def add_vaciando_rama(self, nodo):
             if self:
                 while True:
                     ultimo_nodo = self.pop()
@@ -166,7 +166,7 @@ class BusquedaEnProfundidad(BusquedaGeneral):
                         self.append(ultimo_nodo)
                         break
             self.append(nodo)
-        self.explorados.añadir = types.MethodType(añadir_vaciando_rama,
+        self.explorados.add = types.MethodType(aa_vaciando_rama,
                                                   self.explorados)
 
 

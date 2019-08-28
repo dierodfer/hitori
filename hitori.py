@@ -19,7 +19,7 @@ class BloquearCasilla:
         return estado.get_celda(f,c) != 0;
     
     def esBorde(self, estado, f, c):
-        return (f+1 == estado.tamaño_hor() or c+1 == estado.tamaño_ver() or  f == 0 or  c == 0)
+        return (f+1 == estado.size_hor() or c+1 == estado.size_ver() or  f == 0 or  c == 0)
     
     #Sigue el camino de adyacentes diagolanales comprobando que no cierra el zurco
     def cumpleRestriccionDeCamino(self,estado,f,c, filaAnterior=-1, columnaAnterior=-1):
@@ -36,7 +36,7 @@ class BloquearCasilla:
             #Es primera iteracion
             if(filaAnterior == -1):
                 return True
-            #No es primera iteración
+            #No es primera iteracion
             else: 
                 if(self.esBorde(estado, f, c)):
                     return False
@@ -94,7 +94,7 @@ class BloquearCasilla:
         return nuevo_estado
     
     def __str__(self):
-        return 'Acción: {}'.format(self.nombre)
+        return 'Accion: {}'.format(self.nombre)
     
 class DesbloquearCasilla:
     def __init__(self, i, j, nuevoValor):
@@ -126,12 +126,12 @@ class ProblemaEspacioEstadosHitori:
         return self.comprobacionPorColumnas(estado) and self.comprobacionPorFilas(estado)
 
     def acciones_aplicables(self, estado):
-        return (acción
-                for acción in self.acciones
-                if acción.es_aplicable(estado))
+        return (accion
+                for accion in self.acciones
+                if accion.es_aplicable(estado))
     
     def comprobacionPorFilas(self, estado):
-        for fila in range(0, estado.tamaño_hor()):
+        for fila in range(0, estado.size_hor()):
             for f in [1,2,3,4,5,6,7,8,9]:       
                 if (estado.get_Fila(fila).count(f) > 1):
                     return False
@@ -139,7 +139,7 @@ class ProblemaEspacioEstadosHitori:
 
     def comprobacionPorColumnas(self, estado):
         transpuesta = estado.get_traspuesta()
-        for columna in range(0, transpuesta.tamaño_hor()):
+        for columna in range(0, transpuesta.size_hor()):
             for c in [1,2,3,4,5,6,7,8,9]:
                 if (transpuesta.get_Fila(columna).count(c) > 1):
                     return False

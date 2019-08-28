@@ -1,24 +1,24 @@
 class Accion:
-    def __init__(self, nombre='', aplicabilidad=None, aplicación=None,
+    def __init__(self, nombre='', aplicabilidad=None, aplicacion=None,
                  coste=None):
         self.nombre = nombre
         self.aplicabilidad = aplicabilidad
-        self.aplicación = aplicación
+        self.aplicacion = aplicacion
         self.coste = coste
 
     def es_aplicable(self, estado):
         if self.aplicabilidad is None:
             raise NotImplementedError(
-                'Aplicabilidad de la acción no implementada')
+                'Aplicabilidad de la accion no implementada')
         else:
             return self.aplicabilidad(estado)
 
     def aplicar(self, estado):
         if self.aplicar is None:
             raise NotImplementedError(
-                'Aplicación de la acción no implementada')
+                'Aplicacion de la accian no implementada')
         else:
-            return self.aplicación(estado)
+            return self.aplicacion(estado)
 
     def coste_de_aplicar(self, estado):
         if self.coste is None:
@@ -27,7 +27,7 @@ class Accion:
             return self.coste(estado)
 
     def __str__(self):
-        return 'Acción: {}'.format(self.nombre)
+        return 'Accion: {}'.format(self.nombre)
 
 
 class ProblemaEspacioEstados:
@@ -42,6 +42,6 @@ class ProblemaEspacioEstados:
         return estado in self.estados_finales
 
     def acciones_aplicables(self, estado):
-        return (acción
-                for acción in self.acciones
-                if acción.es_aplicable(estado))
+        return (accion
+                for accion in self.acciones
+                if accion.es_aplicable(estado))
