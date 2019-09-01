@@ -1,9 +1,5 @@
 import objetos as Objetos
 
-tablero = Objetos.Tablero([[0,9,5,6,7],[1,1,2,0,2],[0,2,0,3,4],[7,0,7,4,1],[5,2,6,1,2]])
-tablero2 = Objetos.Tablero([[3,9,3],[3,7,2],[8,2,3]])
-tablero3 = Objetos.Tablero([[1,9,5,6,0],[1,7,2,0,2],[7,2,1,3,4],[7,5,7,0,1],[5,2,6,1,0]])
-tablero4 = Objetos.Tablero([[0, 1, 0, 7, 1], [6, 2, 4, 6, 0], [6, 7, 6, 8, 8], [7, 0, 1, 1, 7], [1, 3, 0, 2, 0]])
 
 class BloquearCasilla:
     def __init__(self, i, j, cost=1):
@@ -20,6 +16,9 @@ class BloquearCasilla:
     
     def esBorde(self, estado, f, c):
         return (f+1 == estado.size_hor() or c+1 == estado.size_ver() or  f == 0 or  c == 0)
+    
+    def coste_de_aplicar(self):
+        return self.coste
     
     #Sigue el camino de adyacentes diagolanales comprobando que no cierra el zurco
     def cumpleRestriccionDeCamino(self,estado,f,c, filaAnterior=-1, columnaAnterior=-1):
@@ -66,6 +65,7 @@ class BloquearCasilla:
                 or (estado.get_celda(f-1,c-1) == 0))
         
     def getAdyacentesDiagonales(self,estado,f,c):
+       
         res= []
         if(estado.get_celda(f+1,c+1) == 0):
             res.append([f+1,c+1])

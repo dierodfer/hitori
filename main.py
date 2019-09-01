@@ -37,19 +37,22 @@ def init():
     lblBusqueda.grid(padx=5, pady=5, column=5, row=0)
     lblX = Label(window, text="x")
     lblRuta = Label(window, text="Ruta:")
+    lblRutaResultado = Label(window, text="Ruta donde se creara el resultado:")
     lblLineaALeer = Label(window, text="Linea:")
     lblError = Label(window, text="Errores", background="red")
 
     btnCargar = Button(window, text="Cargar", width=40)
     btnResolver = Button(window, text="Resolver", width=40)
+    btnResolverFichero = Button(window, text="Cargar y resolver fichero", width=40)
     
     # Inputs
     inputRuta = Entry(window, width=30)
+    inputRutaFicheroResultado = Entry(window, width=30)
     inputLineaALeer = Entry(window, width=4)   
     inputFilas = Entry(window, width=4)
     inputColumnas = Entry(window, width=4)
     inputTipo = Combobox(window)
-    inputTipo['values'] = ('Busqueda en anchura', 'Busqueda en profundidad', 'Busqueda optima', 'Busqueda A*')
+    inputTipo['values'] = ('Busqueda en profundidad', 'Busqueda en anchura', 'Busqueda optima', 'Busqueda A*')
     inputTipo.current(0)
     
     # Muestra el error enviado
@@ -88,10 +91,25 @@ def init():
     
     def clickBtnResolver():
         starttime = datetime.now()
-        resolverHitori()
+        solucion = resolverHitori()
+        displayTableroSolucion(solucion)
         diff = datetime.now() - starttime;
         print('Finalizado en: ' + str(diff.seconds) + ',' + str(diff.microseconds) + 'segundos')
         escondeComponentes()
+        
+    def clickBtnResolverFichero():
+        if len(inputRuta.get()) > 0:
+            if len(inputRutaFicheroResultado.get()) > 0:
+                escondeComponentes()
+                if(cargarYResuelveTableroFichero(inputRuta.get(), inputRutaFicheroResultado.get(), inputTipo.get())):
+                    # TODO cambiar valores N/A por los globales
+                    lblFila.configure(text='N: ' + str(filas))
+                    lblColumna.configure(text='M: ' + str(columnas))
+                    lblBusqueda.configure(text=tipoBusqueda)
+                else:
+                    mostrarError('No se pudo cargar el archivo')
+        else:
+            mostrarError('Complete el campo ruta')
     
     def clickBtnGenerar():
         escondeComponentes()
@@ -112,6 +130,16 @@ def init():
         btnCargar.configure(command=clickBtnCargar2)
         btnCargar.grid(column=3, row=4, columnspan=6)
     
+    def clickBtnLeerFichero():
+        escondeComponentes()
+        inputRuta.grid(padx=5, pady=5, column=4, row=2, columnspan=3)
+        lblRuta.grid(padx=5, pady=5, column=3, row=2)
+        inputRutaFicheroResultado.grid(padx=5, pady=5, column=4, row=3, columnspan=3)
+        lblRutaResultado.grid(padx=1, pady=1, column=3, row=3)
+        inputTipo.grid(padx=5, pady=5, column=3, row=1, columnspan=3)
+        btnResolverFichero.configure(command=clickBtnResolverFichero)
+        btnResolverFichero.grid(column=3, row=4, columnspan=6)
+    
     def escondeComponentes():
         inputColumnas.grid_remove()
         lblX.grid_remove()
@@ -124,15 +152,19 @@ def init():
         btnCargar.grid_remove()
         lblError.grid_remove()
         btnResolver.grid_remove()
+        inputRutaFicheroResultado.grid_remove()
+        lblRutaResultado.grid_remove()
 
     # Botones
     btnGenerar = Button(window, text="Generar Hitori", command=clickBtnGenerar, width=30)
     btnGenerar.grid(padx=5, pady=5, column=1, row=0)
     btnLeer = Button(window, text="Leer Hitori", command=clickBtnLeer, width=30)
     btnLeer.grid(padx=5, pady=5, column=1, row=1)
+    btnLeerFichero = Button(window, text="Leer fichero completo", command=clickBtnLeerFichero, width=30)
+    btnLeerFichero.grid(padx=5, pady=5, column=1, row=2)
     btnResolver.configure(command=clickBtnResolver)
-    btnLeer = Button(window, text="Reset", command=reset, width=30)
-    btnLeer.grid(padx=5, pady=5, column=1, row=2)
+    btnReset = Button(window, text="Reset", command=reset, width=30)
+    btnReset.grid(padx=5, pady=5, column=1, row=3)
 
     window.mainloop()
 
@@ -140,25 +172,27 @@ def init():
 def resolverHitori():
     print(tipoBusqueda)
     acciones = []
-   
+    result = ''
     table = Objetos.Tablero(tablero)
     for posicion in getPosisionesCasillasRepetidas(Objetos.Tablero(tablero)):
-        acciones.append(problema_hitori.BloquearCasilla(posicion[0],posicion[1], table.get_coste_celda(posicion[0],posicion[1])))
+        acciones.append(problema_hitori.BloquearCasilla(posicion[0], posicion[1], table.get_coste_celda(posicion[0], posicion[1])))
     
     problemaHiroti = problema_hitori.ProblemaEspacioEstadosHitori(acciones, tablero);
     
     if(tipoBusqueda == 'Busqueda en anchura'):
         b_anchura = busqueda_estados.BusquedaEnAnchura(detallado=False)
-        print(b_anchura.buscar(problemaHiroti))
+        result = b_anchura.buscar(problemaHiroti)
     if(tipoBusqueda == 'Busqueda en profundidad'):
         b_profundidad = busqueda_estados.BusquedaEnProfundidad(detallado=False)
-        print (b_profundidad.buscar(problemaHiroti))
+        result = b_profundidad.buscar(problemaHiroti)
     if(tipoBusqueda == 'Busqueda optima'):
-        b_optima = busqueda_estados.Busquedaoptima()
-        print (b_optima.buscar(problemaHiroti))
+        b_optima = busqueda_estados.Busquedaoptima(detallado=True)
+        result = b_optima.buscar(problemaHiroti)
     if(tipoBusqueda == 'Busqueda A*'):
-        #TODO 
-        print('hola')
+        # TODO 
+        result = 'hola'
+    print(result)
+    return result
 
     
 def cargarVariablesGlobales(fil, col, tipo):
@@ -176,7 +210,7 @@ def createRandomTablero():
     for f in range(filas):
         arrayColumnas = []
         for c in range(columnas):
-            arrayColumnas.append(random.randrange(1, 10))
+            arrayColumnas.append(random.randrange(1, filas + 1))
         tablero.append(arrayColumnas)
 
 
@@ -185,6 +219,24 @@ def displayTablero():
     for fila in range(filas):
         for columna in range(columnas):
             lblTablero = Label(window, text=tablero[fila][columna]).grid(padx=3, pady=3 , row=fila + 1, column=columna + 12)
+    Label            
+    
+def displayTableroSolucion(solucion):
+    global lblTableroSolucion
+    if(solucion== None):
+        lblSolucion= Label(window, text="Solucion:     No tiene solucion").grid(padx=5, pady=5, column=5, row=filas+5, columnspan=5)
+    else:
+        lblSolucion= Label(window, text="Solucion: ").grid(padx=5, pady=5, column=5, row=filas+5, columnspan=5)
+        for fila in range(filas):
+            for columna in range(columnas):
+                 for posicion in solucion:
+                    x = posicion[18:19]
+                    y = posicion[20:21]
+                    if(fila + 1 == int(x) and columna + 1 == int(y)):
+                        lblTableroSolucion = Label(window, text='X').grid(padx=3, pady=3 , row=filas+fila+7, column=columna+12)
+                        break
+                    else:    
+                        lblTableroSolucion = Label(window, text=tablero[fila][columna]).grid(padx=3, pady=3 , row=filas+fila+7, column=columna+12)
 
             
 def cargarTableroFichero(ruta, lineaSeleccionada, tipoBusqueda):
@@ -206,50 +258,21 @@ def cargarTableroFichero(ruta, lineaSeleccionada, tipoBusqueda):
     return True
 
 
-# def esSolucion():
-#     return comprobacionPorColumnas() and comprobacionPorFilas()
-# 
-# 
-# def comprobacionPorFilas():
-#     solucion = True
-#     cantidadNumerosPorPosicion = []
-#     sumatorios = {1:sumar(0, cantidadNumerosPorPosicion), 2:sumar(1, cantidadNumerosPorPosicion), 3:sumar(2, cantidadNumerosPorPosicion), 4:sumar(3, cantidadNumerosPorPosicion), 5:sumar(4, cantidadNumerosPorPosicion), 6:sumar(5, cantidadNumerosPorPosicion), 7:sumar(6, cantidadNumerosPorPosicion), 8:sumar(7, cantidadNumerosPorPosicion), 9:sumar(8, cantidadNumerosPorPosicion)}
-#     for fila in tablero:
-#         cantidadNumerosPorPosicion = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-#         if not solucion:
-#             return solucion
-#             break
-#         for numero in fila:
-#             if not numero == 0:
-#                 sumatorios[numero]
-#         for cantidad in cantidadNumerosPorPosicion: 
-#             if cantidad > 1:
-#                 solucion = False
-#                 break
-#     return solucion
-# 
-# 
-# def comprobacionPorColumnas():
-#     solucion = True
-#     cantidadNumerosPorPosicion = []
-#     sumatorios = {1:sumar(0, cantidadNumerosPorPosicion), 2:sumar(1, cantidadNumerosPorPosicion), 3:sumar(2, cantidadNumerosPorPosicion), 4:sumar(3, cantidadNumerosPorPosicion), 5:sumar(4, cantidadNumerosPorPosicion), 6:sumar(5, cantidadNumerosPorPosicion), 7:sumar(6, cantidadNumerosPorPosicion), 8:sumar(7, cantidadNumerosPorPosicion), 9:sumar(8, cantidadNumerosPorPosicion)}
-#     for columna in range(columnas):
-#         cantidadNumerosPorPosicion = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-#         if not solucion:
-#             return solucion
-#             break
-#         for fila in tablero:
-#             if not fila[columna] == 0:
-#                 sumatorios[fila[columna]]
-#         for cantidad in cantidadNumerosPorPosicion: 
-#             if cantidad > 1:
-#                 solucion = False
-#                 break
-#     return solucion
-
-
-def sumar(posicion, cantidadNumerosPorPosicion):
-    cantidadNumerosPorPosicion[posicion] = cantidadNumerosPorPosicion[posicion] + 1
+def cargarYResuelveTableroFichero(ruta, rutaSolucion, tipoBusqueda):
+    global tablero
+    tablero = []
+    fichero = open(ruta, 'r')
+    ficheroResultado = open(rutaSolucion + '/ficheroResultadoHitori.txt', 'w')
+    for linea in fichero:
+        starttime = datetime.now()
+        tablero = ast.literal_eval(linea)
+        tamColumna = len(tablero[0])
+        tamFila = len(tablero)  
+        cargarVariablesGlobales(tamColumna, tamFila, tipoBusqueda)
+        solucion = resolverHitori()
+        tiempo = datetime.now() - starttime
+        ficheroResultado.write('Hitori: ' + str(linea) + 'Resultado: ' + str(solucion) + '\n' + 'Finalizado en: ' + str(tiempo.seconds) + ',' + str(tiempo.microseconds) + 'segundos' + '\n' + '\n')
+    return ficheroResultado
     
     
 def getPosisionesCasillasRepetidas(estado):
@@ -265,28 +288,31 @@ def getPosisionesCasillasRepetidas(estado):
             res.append(i)
     return res
 
+
 def devuelveRepetidasFilas(estado):
     res = []
     for fila in range(0, estado.size_hor()):
-        for valorFila in [1,2,3,4,5,6,7,8,9]:       
+        for valorFila in [1, 2, 3, 4, 5, 6, 7, 8, 9]:       
             valoresFila = estado.get_Fila(fila)
             if (valoresFila.count(valorFila) > 1):
                 for columna in range(0, estado.size_hor()):
-                    if(estado.get_celda(fila,columna) == valorFila):
-                        res.append([fila,columna])
+                    if(estado.get_celda(fila, columna) == valorFila):
+                        res.append([fila, columna])
     return res
+
 
 def devuelveRepetidasColumnas(estado):
     transpuesta = estado.get_traspuesta()
     res = []
     for columna in range(0, transpuesta.size_hor()):
-        for valorColumna in [1,2,3,4,5,6,7,8,9]:       
+        for valorColumna in [1, 2, 3, 4, 5, 6, 7, 8, 9]:       
             valoresColumna = transpuesta.get_Fila(columna)
             if (valoresColumna.count(valorColumna) > 1):
                 for fila in range(0, transpuesta.size_hor()):
-                    if(transpuesta.get_celda(columna,fila) == valorColumna):
-                        res.append([fila,columna])
+                    if(transpuesta.get_celda(columna, fila) == valorColumna):
+                        res.append([fila, columna])
     return res
+
     
 if __name__ == '__main__':
 

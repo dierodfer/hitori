@@ -95,7 +95,7 @@ class NodoConHeuristica(NodoSimple):
             self.coste = 0
         else:
             self.profundidad = padre.profundidad + 1
-            self.coste = padre.coste + accion.coste_de_aplicar(padre.estado)
+            self.coste = padre.coste + accion.coste_de_aplicar()
         self.heuristica = self.f(self)
 
     @staticmethod

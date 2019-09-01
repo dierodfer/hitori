@@ -30,8 +30,8 @@ class Tablero:
     
     def get_coste_celda(self, fila, columna):
         valor = self.get_celda(fila, columna)
-        costeFila = estado.get_Fila(fila).count(valor)
-        transpuesta = estado.get_traspuesta()
+        costeFila = self.get_Fila(fila).count(valor)
+        transpuesta = self.get_traspuesta()
         costeColumna = transpuesta.get_Fila(columna).count(valor)
         return -1 * (costeFila + costeColumna)
     
