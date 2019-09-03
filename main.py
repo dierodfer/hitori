@@ -17,16 +17,16 @@ import objetos as Objetos
 # Variables Globales
 filas = 0
 columnas = 0
-tipoBusqueda = 'Busqueda en anchura'
+tipoBusqueda = 'Busqueda en procfundidad'
 tablero = []
 
 
 def init():
-    
+    sys.setrecursionlimit(99999)
     global window
     window = Tk()
     window.title("Hitori")
-    window.geometry('800x350')
+    window.geometry('800x500')
     global columnas
     # Labels    
     lblFila = Label(window, text="N: " + str(filas))

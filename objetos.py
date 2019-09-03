@@ -16,8 +16,8 @@ class Tablero:
     def get_traspuesta(self):
         return Tablero(list(zip(*self.celdas)))
     
+    #Devuelve valor -1 si no está dentro del rango del tablero y 0 si está bloqueada
     def get_celda(self, f, c):
-        #devuelve -1 si sale de rango
         if ((f<0) or (f+1>self.size_hor()) or (c<0) or (c+1>self.size_ver())):
             return -1
         else:
