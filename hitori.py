@@ -23,14 +23,16 @@ class BloquearCasilla:
     
     #Sigue el camino de adyacentes diagolanales comprobando que no tiene mas adyacentes o 
     #toca un limite del tablero
-    def cumpleRestriccionDeCamino(self,estado,f,c, filaAnterior=-1, columnaAnterior=-1, iteraciones=1, anteriores=[] ):
+    def cumpleRestriccionDeCamino(self,estado,f,c, filaAnterior=-1, columnaAnterior=-1, iteraciones=1):
         self.adyacentesDiagonales = self.getAdyacentesDiagonalesBloqueadas(estado, f, c)
-        self.anteriores = anteriores
-        
+#         print(estado)
+#         print(iteraciones)
+#         print(f,c)
+        print(iteraciones,f,c,self.adyacentesDiagonales)
         #No es primera iteracion borra la casilla bloqueada anterior
         if(self.adyacentesDiagonales.count([filaAnterior,columnaAnterior]) == 1):
             self.adyacentesDiagonales.remove([filaAnterior,columnaAnterior])
-        
+        print(self.adyacentesDiagonales)
         
         if((len(self.adyacentesDiagonales) == 1) & (not self.esBorde(estado, f, c)) & (filaAnterior == -1)):
             return True
@@ -47,6 +49,7 @@ class BloquearCasilla:
                     return True
         else:
             caminosCumplidos = 0
+            iteraciones=iteraciones+1
             for nuevaCasilla in self.adyacentesDiagonales: 
                  #Elimina error de bucles se bloqueadas
 #                 if nuevaCasilla in self.anteriores:
@@ -54,10 +57,9 @@ class BloquearCasilla:
 #                 else:
 #                     self.anteriores.append(nuevaCasilla)
                 
-                iteraciones=iteraciones+1
-                print(iteraciones)
-                if iteraciones > 3:
-                   print(f,c)
+                #Si entra en bucle, es un camino cerrado.
+                if iteraciones > 25:
+                    return False
 
                 caminosCumplidos += self.cumpleRestriccionDeCamino(estado, nuevaCasilla[0], nuevaCasilla[1], f, c, iteraciones)
             #Modificar para solucionar el problema de mas de 2 caminos
@@ -69,10 +71,17 @@ class BloquearCasilla:
     
     #Contiene una celda bloqueada directamente al lado
     def tieneAdyacentesEnCruzBloqueados(self,estado,f,c):
+#         print('Entra');
         return ((estado.get_celda(f+1,c) == 0) 
                 or (estado.get_celda(f, c+1) == 0) 
                 or (estado.get_celda(f-1,c) == 0) 
                 or (estado.get_celda(f, c-1) == 0))
+    
+    def tieneTodasAdyacentesEnCruzBloqueados(self,estado,f,c):
+        return ((estado.get_celda(f+1,c) == 0) 
+                and (estado.get_celda(f, c+1) == 0) 
+                and (estado.get_celda(f-1,c) == 0) 
+                and (estado.get_celda(f, c-1) == 0))
 
 #     def tieneAdyacentesDiagonalesBloqueadas(self,estado,f,c):
 #         return ((estado.get_celda(f+1,c+1) == 0) 
@@ -81,10 +90,10 @@ class BloquearCasilla:
 #                 or (estado.get_celda(f-1,c-1) == 0))
     
     def tieneBucleSimple(self,estado,f,c):
-        return (self.tieneAdyacentesEnCruzBloqueados(estado, f-1, c)  
-                or  self.tieneAdyacentesEnCruzBloqueados(estado, f+1, c)  
-                or  self.tieneAdyacentesEnCruzBloqueados(estado, f, c-1)  
-                or  self.tieneAdyacentesEnCruzBloqueados(estado, f, c+1))
+        return (self.tieneTodasAdyacentesEnCruzBloqueados(estado, f-1, c)  
+                or self.tieneTodasAdyacentesEnCruzBloqueados(estado, f+1, c)  
+                or self.tieneTodasAdyacentesEnCruzBloqueados(estado, f, c-1)  
+                or self.tieneTodasAdyacentesEnCruzBloqueados(estado, f, c+1))
     
     def getAdyacentesDiagonalesBloqueadas(self,estado,f,c):
        
@@ -109,13 +118,14 @@ class BloquearCasilla:
     
     def es_aplicable(self, estado):
         print(estado)
-        print('AdyacentesEnCruz')
-        print((not self.tieneAdyacentesEnCruzBloqueados(estado,self.f,self.c)))
-        print('Bucle')
-        print(not self.tieneBucleSimple(estado,self.f,self.c))
-        return (self.estaEnRango(estado, self.f, self.c) and self.noEstaBloqueada(estado, self.f, self.c) 
+        print('Casilla ({},{})'.format(self.f , self.c))
+#         print('AdyacentesEnCruz:{}'.format(not self.tieneAdyacentesEnCruzBloqueados(estado,self.f,self.c)))
+#         print('Bucle:{}'.format(not self.tieneBucleSimple(estado,self.f,self.c)))
+        return (
+                #self.estaEnRango(estado, self.f, self.c) and 
+                self.noEstaBloqueada(estado, self.f, self.c) 
                 and (not self.tieneAdyacentesEnCruzBloqueados(estado,self.f,self.c)) 
-                and (not self.tieneBucleSimple(estado,self.f,self.c)) 
+                #and (not self.tieneBucleSimple(estado,self.f,self.c)) 
                 and self.cumpleRestriccionDeCamino(estado, self.f, self.c)
                 )
     
