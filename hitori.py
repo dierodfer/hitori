@@ -1,5 +1,4 @@
 import objetos as Objetos
-from pickle import FALSE
 
 
 class BloquearCasilla:
@@ -25,14 +24,75 @@ class BloquearCasilla:
     #toca un limite del tablero
     def cumpleRestriccionDeCamino(self,estado,f,c, filaAnterior=-1, columnaAnterior=-1, iteraciones=1):
         self.adyacentesDiagonales = self.getAdyacentesDiagonalesBloqueadas(estado, f, c)
-#         print(estado)
-#         print(iteraciones)
-#         print(f,c)
-        print(iteraciones,f,c,self.adyacentesDiagonales)
+
+        #Si entra en bucle, es un camino cerrado.
+        if iteraciones > 25:
+            print('false iteraciones')
+            return False
+               
+#         print("Iteracion: {}".format(iteraciones)) 
+#         print(f,c,self.adyacentesDiagonales)
+#         print(filaAnterior,columnaAnterior)
         #No es primera iteracion borra la casilla bloqueada anterior
         if(self.adyacentesDiagonales.count([filaAnterior,columnaAnterior]) == 1):
             self.adyacentesDiagonales.remove([filaAnterior,columnaAnterior])
-        print(self.adyacentesDiagonales)
+       #print(self.adyacentesDiagonales)
+        
+        
+        #Si no es primera iteracion y es borde negativo
+        if((filaAnterior > -1) & self.esBorde(estado, f, c)):
+#             print('false Borde')
+            return False
+        
+        if(len(self.adyacentesDiagonales) == 0):
+#                 print('True Ultima casilla')
+                return True
+
+        else:
+            caminosErroneos = 0
+            iteraciones=iteraciones+1
+            for nuevaCasilla in self.adyacentesDiagonales: 
+                 #Elimina error de bucles se bloqueadas
+#                 if nuevaCasilla in self.anteriores:
+#                     return False
+#                 else:
+#                     self.anteriores.append(nuevaCasilla)
+        
+                if(self.cumpleRestriccionDeCamino(estado, nuevaCasilla[0], nuevaCasilla[1], f, c, iteraciones) == False):
+                    caminosErroneos += 1
+           
+            if((filaAnterior == -1) & self.esBorde(estado, f, c)):
+                if(caminosErroneos > 0):
+                    return False
+                else:
+                    return True      
+            else:
+                if((filaAnterior == -1) & (not self.esBorde(estado, f, c))):
+                    if(caminosErroneos > 1):
+                        return False
+                    else:
+                        return True  
+                else:
+                    if(caminosErroneos > 0):
+                        return False;
+                    else:
+                        return True;  
+
+    def cumpleRestriccionDeCaminoIterativo(self,estado,f,c, filaAnterior=-1, columnaAnterior=-1, iteraciones=1):
+        self.adyacentesDiagonales = self.getAdyacentesDiagonalesBloqueadas(estado, f, c)
+#         print(estado)
+#         print(iteraciones)
+#         print(f,c)
+#         print(iteraciones,f,c,self.adyacentesDiagonales)
+
+        #Si entra en bucle, es un camino cerrado.
+        if (iteraciones > 25):
+            return False
+        
+        #No es primera iteracion borra la casilla bloqueada anterior
+        if(self.adyacentesDiagonales.count([filaAnterior,columnaAnterior]) == 1):
+            self.adyacentesDiagonales.remove([filaAnterior,columnaAnterior])
+#       print(self.adyacentesDiagonales)
         
         if((len(self.adyacentesDiagonales) == 1) & (not self.esBorde(estado, f, c)) & (filaAnterior == -1)):
             return True
@@ -57,17 +117,14 @@ class BloquearCasilla:
 #                 else:
 #                     self.anteriores.append(nuevaCasilla)
                 
-                #Si entra en bucle, es un camino cerrado.
-                if iteraciones > 25:
-                    return False
 
+                
                 caminosCumplidos += self.cumpleRestriccionDeCamino(estado, nuevaCasilla[0], nuevaCasilla[1], f, c, iteraciones)
             #Modificar para solucionar el problema de mas de 2 caminos
             if(caminosCumplidos == 0):
                 return False
             else:
-                return True      
-    
+                return True
     
     #Contiene una celda bloqueada directamente al lado
     def tieneAdyacentesEnCruzBloqueados(self,estado,f,c):
@@ -117,8 +174,8 @@ class BloquearCasilla:
         #return sum(res);
     
     def es_aplicable(self, estado):
-        print(estado)
-        print('Casilla ({},{})'.format(self.f , self.c))
+#         print(estado)
+#         print('Casilla ({},{})'.format(self.f , self.c))
 #         print('AdyacentesEnCruz:{}'.format(not self.tieneAdyacentesEnCruzBloqueados(estado,self.f,self.c)))
 #         print('Bucle:{}'.format(not self.tieneBucleSimple(estado,self.f,self.c)))
         return (

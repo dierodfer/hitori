@@ -210,7 +210,7 @@ def createRandomTablero():
     for f in range(filas):
         arrayColumnas = []
         for c in range(columnas):
-            arrayColumnas.append(random.randrange(1, filas + 1))
+            arrayColumnas.append(random.randrange(1, max(filas,columnas) + 1))
         tablero.append(arrayColumnas)
 
 
@@ -229,7 +229,7 @@ def displayTableroSolucion(solucion):
         lblSolucion= Label(window, text="Solucion: ").grid(padx=5, pady=5, column=5, row=filas+5, columnspan=5)
         for fila in range(filas):
             for columna in range(columnas):
-                 for posicion in solucion:
+                for posicion in solucion:
                     x = posicion[18:19]
                     y = posicion[20:21]
                     if(fila + 1 == int(x) and columna + 1 == int(y)):
@@ -260,10 +260,12 @@ def cargarTableroFichero(ruta, lineaSeleccionada, tipoBusqueda):
 
 def cargarYResuelveTableroFichero(ruta, rutaSolucion, tipoBusqueda):
     global tablero
+    index=0
     tablero = []
     fichero = open(ruta, 'r')
     ficheroResultado = open(rutaSolucion + '/ficheroResultadoHitori.txt', 'w')
     for linea in fichero:
+        index+=1
         starttime = datetime.now()
         tablero = ast.literal_eval(linea)
         tamColumna = len(tablero[0])
@@ -271,7 +273,7 @@ def cargarYResuelveTableroFichero(ruta, rutaSolucion, tipoBusqueda):
         cargarVariablesGlobales(tamColumna, tamFila, tipoBusqueda)
         solucion = resolverHitori()
         tiempo = datetime.now() - starttime
-        ficheroResultado.write('Hitori: ' + str(linea) + 'Resultado: ' + str(solucion) + '\n' + 'Finalizado en: ' + str(tiempo.seconds) + ',' + str(tiempo.microseconds) + 'segundos' + '\n' + '\n')
+        ficheroResultado.write('Hitori'+str(index)+': ' + str(linea) + 'Resultado: ' + str(solucion) + '\n' + 'Finalizado en: ' + str(tiempo.seconds) + ',' + str(tiempo.microseconds) + 'segundos' + '\n' + '\n')
     return ficheroResultado
     
     
@@ -279,7 +281,7 @@ def getPosisionesCasillasRepetidas(estado):
     res = []
     listaColumnas = devuelveRepetidasColumnas(estado)
     listaFilas = devuelveRepetidasFilas(estado)
-#     listaColumnas.__add__(listaFilas)
+
     for i in listaColumnas:
         if i not in res:
             res.append(i)
@@ -299,8 +301,8 @@ def devuelveRepetidasFilas(estado):
                     if(estado.get_celda(fila, columna) == valorFila):
                         res.append([fila, columna])
     return res
-
-
+ 
+ 
 def devuelveRepetidasColumnas(estado):
     transpuesta = estado.get_traspuesta()
     res = []
