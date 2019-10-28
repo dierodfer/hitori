@@ -28,6 +28,12 @@ class Tablero:
         copia[f][c] = nuevoValor
         return Tablero(copia)
     
+    def costeBase(self, valor):
+        count = 0;
+        for f in range(0, self.size_hor()):
+            count = count + self.get_Fila(f).count(valor)
+        return count
+    
     def get_coste_celda(self, fila, columna):
         valor = self.get_celda(fila, columna)
         costeFila = self.get_Fila(fila).count(valor)

@@ -172,17 +172,49 @@ class BloquearCasilla:
         #res.append(estado.get_celda(f+1,c-1) == 0)
         #res.append(estado.get_celda(f-1,c-1) == 0)
         #return sum(res);
+        
+    def devuelveRepetidasFilas(self,estado):
+        res = []
+        for fila in range(0, estado.size_hor()):
+            for valorFila in [1, 2, 3, 4, 5, 6, 7, 8, 9]:       
+                valoresFila = estado.get_Fila(fila)
+                if (valoresFila.count(valorFila) > 1):
+                    for columna in range(0, estado.size_hor()):
+                        if(estado.get_celda(fila, columna) == valorFila):
+                            res.append([fila, columna])
+        return res
+     
+     
+    def devuelveRepetidasColumnas(self,estado):
+        transpuesta = estado.get_traspuesta()
+        res = []
+        for columna in range(0, transpuesta.size_hor()):
+            for valorColumna in [1, 2, 3, 4, 5, 6, 7, 8, 9]:       
+                valoresColumna = transpuesta.get_Fila(columna)
+                if (valoresColumna.count(valorColumna) > 1):
+                    for fila in range(0, transpuesta.size_hor()):
+                        if(transpuesta.get_celda(columna, fila) == valorColumna):
+                            res.append([fila, columna])
+        return res
+    
+    def getPosisionesCasillasRepetidas(self,estado):
+        res = []
+        listaColumnas = self.devuelveRepetidasColumnas(estado)
+        listaFilas = self.devuelveRepetidasFilas(estado)
+    
+        for i in listaColumnas:
+            if i not in res:
+                res.append(i)
+        for i in listaFilas:
+            if i not in res:
+                res.append(i)
+        return res
     
     def es_aplicable(self, estado):
-#         print(estado)
-#         print('Casilla ({},{})'.format(self.f , self.c))
-#         print('AdyacentesEnCruz:{}'.format(not self.tieneAdyacentesEnCruzBloqueados(estado,self.f,self.c)))
-#         print('Bucle:{}'.format(not self.tieneBucleSimple(estado,self.f,self.c)))
         return (
-                #self.estaEnRango(estado, self.f, self.c) and 
                 self.noEstaBloqueada(estado, self.f, self.c) 
+                and ([self.f,self.c] in self.getPosisionesCasillasRepetidas(estado)) 
                 and (not self.tieneAdyacentesEnCruzBloqueados(estado,self.f,self.c)) 
-                #and (not self.tieneBucleSimple(estado,self.f,self.c)) 
                 and self.cumpleRestriccionDeCamino(estado, self.f, self.c)
                 )
     
@@ -192,6 +224,10 @@ class BloquearCasilla:
     
     def __str__(self):
         return 'Accion: {}'.format(self.nombre)
+    
+    
+    
+    
     
 # class DesbloquearCasilla:
 #     def __init__(self, i, j, nuevoValor):
@@ -211,7 +247,9 @@ class BloquearCasilla:
 #     def aplicar(self, estado,f,c,nuevoValor):
 #         nuevo_estado = estado.set_celda(f,c,nuevoValor)
 #         return nuevo_estado
-    
+
+
+
 class ProblemaEspacioEstadosHitori:
     def __init__(self, acciones, estado_inicial=None):
         if not isinstance(acciones, list):
