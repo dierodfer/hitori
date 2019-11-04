@@ -174,8 +174,10 @@ def resolverHitori():
     acciones = []
     result = ''
     table = Objetos.Tablero(tablero)
+    arrayCostes = table.get_array_orden();
     for posicion in getPosisionesCasillasRepetidas(Objetos.Tablero(tablero)):
-        acciones.append(problema_hitori.BloquearCasilla(posicion[0], posicion[1], table.get_coste_celda(posicion[0], posicion[1])))
+        accion = problema_hitori.BloquearCasilla(posicion[0], posicion[1], arrayCostes, table.get_coste_celda(posicion[0], posicion[1]));
+        acciones.append(accion)
     
     problemaHiroti = problema_hitori.ProblemaEspacioEstadosHitori(acciones, tablero);
     
@@ -189,7 +191,7 @@ def resolverHitori():
         b_optima = busqueda_estados.Busquedaoptima(detallado=True)
         result = b_optima.buscar(problemaHiroti)
     if(tipoBusqueda == 'Busqueda A*'):
-        # TODO 
+#          b_optima = busqueda_estados.BusquedaAEstrella(h,detallado=True)
         result = 'hola'
     print(result)
     return result
