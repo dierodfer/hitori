@@ -15,17 +15,16 @@ class BloquearCasilla:
         return estado.get_celda(f,c) != 0;
     
     def valorSoloEnFilaYColumna(self,estado):
-        return ([self.f,self.c] in self.getPosisionesCasillasRepetidas(estado))
+        return (estado.get_coste_celda(self.f,self.c) < 0)
+        #return ([self.f,self.c] in self.getPosisionesCasillasRepetidas(estado))
     
-    def esValorMasRepetido(self, estado):
+    def esValorMasRepetidoConCoste(self, estado):
         valor = estado.get_celda(self.f,self.c)
-        repetidas = self.getPosisionesCasillasRepetidas(estado)
         for elemento in self.arrayCostes:
-            if estado.getCountRepetidasByValor(elemento[1]) > 0:
+            if estado.getCountRepetidasConCosteByValor(elemento[1]) > 0:
                 valorMaximo = elemento[1]
                 break
         return valorMaximo == valor 
-    
     
     def esBorde(self, estado, f, c):
         return (f+1 == estado.size_hor() or c+1 == estado.size_ver() or  f == 0 or  c == 0)
@@ -39,38 +38,27 @@ class BloquearCasilla:
         self.adyacentesDiagonales = self.getAdyacentesDiagonalesBloqueadas(estado, f, c)
 
         #Si entra en bucle, es un camino cerrado.
-        if iteraciones > 25:
-            print('false iteraciones')
+        if iteraciones > 20:
+            print('Esto es un bucle, existe un camino cerrado.')
             return False
                
-#         print("Iteracion: {}".format(iteraciones)) 
-#         print(f,c,self.adyacentesDiagonales)
-#         print(filaAnterior,columnaAnterior)
         #No es primera iteracion borra la casilla bloqueada anterior
         if(self.adyacentesDiagonales.count([filaAnterior,columnaAnterior]) == 1):
             self.adyacentesDiagonales.remove([filaAnterior,columnaAnterior])
-       #print(self.adyacentesDiagonales)
         
         
         #Si no es primera iteracion y es borde negativo
         if((filaAnterior > -1) & self.esBorde(estado, f, c)):
-#             print('false Borde')
             return False
         
         if(len(self.adyacentesDiagonales) == 0):
-#                 print('True Ultima casilla')
-                return True
+            return True
 
         else:
             caminosErroneos = 0
             iteraciones=iteraciones+1
             for nuevaCasilla in self.adyacentesDiagonales: 
-                 #Elimina error de bucles se bloqueadas
-#                 if nuevaCasilla in self.anteriores:
-#                     return False
-#                 else:
-#                     self.anteriores.append(nuevaCasilla)
-        
+                #Recursividad
                 if(self.cumpleRestriccionDeCamino(estado, nuevaCasilla[0], nuevaCasilla[1], f, c, iteraciones) == False):
                     caminosErroneos += 1
            
@@ -94,29 +82,10 @@ class BloquearCasilla:
     
     #Contiene una celda bloqueada directamente al lado
     def tieneAdyacentesEnCruzBloqueados(self,estado,f,c):
-#         print('Entra');
         return ((estado.get_celda(f+1,c) == 0) 
                 or (estado.get_celda(f, c+1) == 0) 
                 or (estado.get_celda(f-1,c) == 0) 
                 or (estado.get_celda(f, c-1) == 0))
-    
-    def tieneTodasAdyacentesEnCruzBloqueados(self,estado,f,c):
-        return ((estado.get_celda(f+1,c) == 0) 
-                and (estado.get_celda(f, c+1) == 0) 
-                and (estado.get_celda(f-1,c) == 0) 
-                and (estado.get_celda(f, c-1) == 0))
-
-#     def tieneAdyacentesDiagonalesBloqueadas(self,estado,f,c):
-#         return ((estado.get_celda(f+1,c+1) == 0) 
-#                 or (estado.get_celda(f+1,c-1) == 0) 
-#                 or (estado.get_celda(f-1,c+1) == 0) 
-#                 or (estado.get_celda(f-1,c-1) == 0))
-    
-    def tieneBucleSimple(self,estado,f,c):
-        return (self.tieneTodasAdyacentesEnCruzBloqueados(estado, f-1, c)  
-                or self.tieneTodasAdyacentesEnCruzBloqueados(estado, f+1, c)  
-                or self.tieneTodasAdyacentesEnCruzBloqueados(estado, f, c-1)  
-                or self.tieneTodasAdyacentesEnCruzBloqueados(estado, f, c+1))
     
     def getAdyacentesDiagonalesBloqueadas(self,estado,f,c):
        
@@ -139,6 +108,7 @@ class BloquearCasilla:
         #res.append(estado.get_celda(f-1,c-1) == 0)
         #return sum(res);
         
+    #Optimizado ya no se usa no borrar
     def devuelveRepetidasFilas(self,estado):
         res = []
         for fila in range(0, estado.size_hor()):
@@ -150,7 +120,7 @@ class BloquearCasilla:
                             res.append([fila, columna])
         return res
      
-     
+    #Optimizado ya no se usa no borrar
     def devuelveRepetidasColumnas(self,estado):
         transpuesta = estado.get_traspuesta()
         res = []
@@ -163,6 +133,7 @@ class BloquearCasilla:
                             res.append([fila, columna])
         return res
     
+    #Optimizado ya no se usa no borrar
     def getPosisionesCasillasRepetidas(self,estado):
         res = []
         listaColumnas = self.devuelveRepetidasColumnas(estado)
@@ -180,7 +151,7 @@ class BloquearCasilla:
     def es_aplicable(self, estado):
         return (
                 self.noEstaBloqueada(estado, self.f, self.c)
-                and self.esValorMasRepetido(estado) 
+                and self.esValorMasRepetidoConCoste(estado) 
                 and self.valorSoloEnFilaYColumna(estado)
                 and (not self.tieneAdyacentesEnCruzBloqueados(estado,self.f,self.c)) 
                 and self.cumpleRestriccionDeCamino(estado, self.f, self.c)

@@ -27,7 +27,7 @@ class Tablero:
         
         return res
     
-    #Devuelve valor -1 si no está dentro del rango del tablero y 0 si está bloqueada
+    #Devuelve valor -1 si no esta dentro del rango del tablero y 0 si esta bloqueada
     def get_celda(self, f, c):
         if ((f<0) or (f+1>self.size_hor()) or (c<0) or (c+1>self.size_ver())):
             return -1
@@ -39,13 +39,13 @@ class Tablero:
         copia[f][c] = nuevoValor
         return Tablero(copia)
     
-    //CORRIGELO PERRA
-    def getCountRepetidasByValor(self, valor):
-        costeFila = self.get_Fila(fila).count(valor)
-        transpuesta = self.get_traspuesta()
-        costeColumna = transpuesta.get_Fila(columna).count(valor)
-        return costeFila + costeColumna
-        
+    def getCountRepetidasConCosteByValor(self, valor):
+        res = 0
+        for i in range(0,self.size_hor()):
+            for j in range(0,self.size_ver()):
+                if ((self.get_celda(i, j) == valor) & (self.get_coste_celda(i, j) < 0)):
+                    res+=1
+        return res;
             
     def get_coste_celda(self, fila, columna):
         valor = self.get_celda(fila, columna)

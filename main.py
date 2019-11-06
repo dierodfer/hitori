@@ -7,8 +7,7 @@ Created on 26 abr. 2019
 from tkinter import *
 from tkinter.ttk import *
 import random
-from datetime import datetime
-import time 
+from datetime import datetime 
 import ast
 import hitori as problema_hitori
 import busqueda_espacio_estados as busqueda_estados
@@ -17,7 +16,7 @@ import objetos as Objetos
 # Variables Globales
 filas = 0
 columnas = 0
-tipoBusqueda = 'Busqueda en procfundidad'
+tipoBusqueda = 'Busqueda en profundidad'
 tablero = []
 
 
