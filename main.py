@@ -174,7 +174,7 @@ def resolverHitori():
     result = ''
     table = Objetos.Tablero(tablero)
     arrayCostes = table.get_array_orden();
-    for posicion in getPosisionesCasillasRepetidas(Objetos.Tablero(tablero)):
+    for posicion in table.getPosisionesCasillasRepetidas():
         accion = problema_hitori.BloquearCasilla(posicion[0], posicion[1], arrayCostes, table.get_coste_celda(posicion[0], posicion[1]));
         acciones.append(accion)
     
@@ -276,45 +276,6 @@ def cargarYResuelveTableroFichero(ruta, rutaSolucion, tipoBusqueda):
         tiempo = datetime.now() - starttime
         ficheroResultado.write('Hitori'+str(index)+': ' + str(linea) + 'Resultado: ' + str(solucion) + '\n' + 'Finalizado en: ' + str(tiempo.seconds) + ',' + str(tiempo.microseconds) + 'segundos' + '\n' + '\n')
     return ficheroResultado
-    
-    
-def getPosisionesCasillasRepetidas(estado):
-    res = []
-    listaColumnas = devuelveRepetidasColumnas(estado)
-    listaFilas = devuelveRepetidasFilas(estado)
-
-    for i in listaColumnas:
-        if i not in res:
-            res.append(i)
-    for i in listaFilas:
-        if i not in res:
-            res.append(i)
-    return res
-
-
-def devuelveRepetidasFilas(estado):
-    res = []
-    for fila in range(0, estado.size_hor()):
-        for valorFila in [1, 2, 3, 4, 5, 6, 7, 8, 9]:       
-            valoresFila = estado.get_Fila(fila)
-            if (valoresFila.count(valorFila) > 1):
-                for columna in range(0, estado.size_hor()):
-                    if(estado.get_celda(fila, columna) == valorFila):
-                        res.append([fila, columna])
-    return res
- 
- 
-def devuelveRepetidasColumnas(estado):
-    transpuesta = estado.get_traspuesta()
-    res = []
-    for columna in range(0, transpuesta.size_hor()):
-        for valorColumna in [1, 2, 3, 4, 5, 6, 7, 8, 9]:       
-            valoresColumna = transpuesta.get_Fila(columna)
-            if (valoresColumna.count(valorColumna) > 1):
-                for fila in range(0, transpuesta.size_hor()):
-                    if(transpuesta.get_celda(columna, fila) == valorColumna):
-                        res.append([fila, columna])
-    return res
 
     
 if __name__ == '__main__':
