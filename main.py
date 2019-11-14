@@ -21,7 +21,7 @@ tablero = []
 
 
 def init():
-    sys.setrecursionlimit(99999)
+    sys.setrecursionlimit(99999999)
     global window
     window = Tk()
     window.title("Hitori")
@@ -173,9 +173,8 @@ def resolverHitori():
     acciones = []
     result = ''
     table = Objetos.Tablero(tablero)
-    arrayCostes = table.get_array_orden();
     for posicion in table.getPosisionesCasillasRepetidas():
-        accion = problema_hitori.BloquearCasilla(posicion[0], posicion[1], arrayCostes, table.get_coste_celda(posicion[0], posicion[1]));
+        accion = problema_hitori.BloquearCasilla(posicion[0], posicion[1], table.get_coste_celda(posicion[0], posicion[1]));
         acciones.append(accion)
     
     problemaHiroti = problema_hitori.ProblemaEspacioEstadosHitori(acciones, tablero);
@@ -187,7 +186,7 @@ def resolverHitori():
         b_profundidad = busqueda_estados.BusquedaEnProfundidad(detallado=False)
         result = b_profundidad.buscar(problemaHiroti)
     if(tipoBusqueda == 'Busqueda optima'):
-        b_optima = busqueda_estados.Busquedaoptima(detallado=True)
+        b_optima = busqueda_estados.Busquedaoptima(detallado=False)
         result = b_optima.buscar(problemaHiroti)
     if(tipoBusqueda == 'Busqueda A*'):
 #          b_optima = busqueda_estados.BusquedaAEstrella(h,detallado=True)
@@ -211,7 +210,12 @@ def createRandomTablero():
     for f in range(filas):
         arrayColumnas = []
         for c in range(columnas):
-            arrayColumnas.append(random.randrange(1, max(filas,columnas) + 1))
+            nuevo_valor = random.randrange(1, max(filas,columnas) + 1)
+            if arrayColumnas.count(nuevo_valor) < 1:
+                arrayColumnas.append(nuevo_valor)
+            else:
+                nuevo_valor = random.randrange(1, max(filas,columnas) + 1)
+                arrayColumnas.append(nuevo_valor)
         tablero.append(arrayColumnas)
 
 

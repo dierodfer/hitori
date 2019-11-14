@@ -1,12 +1,15 @@
 import objetos as Objetos
+from multiprocessing.pool import ThreadPool
+# from threading import Thread
+
+ordenPorCoste = []
 
 class BloquearCasilla:
-    def __init__(self, i, j, ordenPorCoste, cost=1):
+    def __init__(self, i, j, cost=1):
         self.nombre = 'Bloquear casilla ({},{})'.format(i+1, j+1)
         self.f = i
         self.c = j
         self.coste = cost
-        self.ordenPorCoste = ordenPorCoste
         self.estado = None;
     
     def noEstaBloqueada(self):
@@ -18,10 +21,13 @@ class BloquearCasilla:
     
     #Busca el valos mas importante que esta actualmente abierto y lo compara con el valor de la celda que quiere ejecutar en la accion
     def esValorMasRepetidoConCoste(self):
+        global resultadoValorMasRepetido;
         valor = self.estado.get_celda(self.f,self.c)
-        for elemento in self.ordenPorCoste:
+        for elemento in ordenPorCoste:
             if self.estado.getCountRepetidasConCosteByValor(elemento[1]) > 0:
+                #resultadoValorMasRepetido = False;
                 return (valor == elemento[1])
+        #resultadoValorMasRepetido = True;
         return False
     
     def esBorde(self, f, c):
@@ -100,11 +106,49 @@ class BloquearCasilla:
     
     def es_aplicable(self, estado):
         self.estado=estado; 
+        
+#         if (not self.tieneAdyacentesEnCruzBloqueados()) and self.valorSoloEnFilaYColumna():
+#             return False
+# 
+#         pool = ThreadPool(processes=1)
+#         
+#         result1 = pool.apply_async(self.esValorMasRepetidoConCoste())
+#         result2 = pool.apply_async(self.cumpleRestriccionDeCamino(self.f, self.c))
+#         # do some other stuff in the main process
+#         
+#         boolean1 = result1.get()
+#         boolean2 = result2.get()
+#         
+#         return boolean1 and boolean2;
+        
+#         t1 = Thread(target=self.esValorMasRepetidoConCoste, args=()) 
+#         t2 = Thread(target=self.cumpleRestriccionDeCamino, args =(self.f, self.c)) 
+#         t1.start()
+#         t2.start()
+#         
+#         print(t1.join())
+#         print(t2.join())
+
+#         if self.tieneAdyacentesEnCruzBloqueados() | (not self.valorSoloEnFilaYColumna()):
+#             return False
+        
+#         pool = ThreadPool(processes=10)
+#         async_result = pool.apply_async(self.esValorMasRepetidoConCoste, ())
+#         async_result2 = pool.apply_async(self.cumpleRestriccionDeCamino, (self.f, self.c))
+# 
+#         return_val = async_result.get()
+#         return_val2 = async_result2.get()
+#         
+#         if (not return_val) | (not return_val2):
+#             return False
+#         
+#         return True
+#         print(resultadoValorMasRepetido)
+        
         return (
-                self.noEstaBloqueada()
-                and self.esValorMasRepetidoConCoste() 
+                (not self.tieneAdyacentesEnCruzBloqueados()) 
                 and self.valorSoloEnFilaYColumna()
-                and (not self.tieneAdyacentesEnCruzBloqueados()) 
+                and self.esValorMasRepetidoConCoste() 
                 and self.cumpleRestriccionDeCamino(self.f, self.c)#No quitar estas variables se necesitan ya que es un algoritmo recursivo
                 )
     
@@ -122,6 +166,8 @@ class ProblemaEspacioEstadosHitori:
             raise TypeError('Debe proporcionarse una lista de acciones')
         self.acciones = acciones
         self.estado_inicial = Objetos.Tablero(estado_inicial)
+        global ordenPorCoste
+        ordenPorCoste = self.estado_inicial.get_array_orden();
 
     def es_estado_final(self, estado):
         return self.comprobacionPorColumnas(estado) and self.comprobacionPorFilas(estado)
