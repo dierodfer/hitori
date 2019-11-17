@@ -1,5 +1,5 @@
 import objetos as Objetos
-from multiprocessing.pool import ThreadPool
+# from multiprocessing.pool import ThreadPool
 # from threading import Thread
 
 ordenPorCoste = []
@@ -60,7 +60,7 @@ class BloquearCasilla:
 
         else:
             caminosErroneos = 0
-            iteraciones=iteraciones+1
+            iteraciones+=1
             for nuevaCasilla in self.adyacentesDiagonales: 
                 #Recursividad
                 if(self.cumpleRestriccionDeCamino(nuevaCasilla[0], nuevaCasilla[1], f, c, iteraciones) == False):
@@ -145,6 +145,7 @@ class BloquearCasilla:
 #         return True
 #         print(resultadoValorMasRepetido)
         
+        #Ordenador por coste de computacion ascendente, cuando uno devuelve negativo python retorna False sin ejecutar los posteriores
         return (
                 (not self.tieneAdyacentesEnCruzBloqueados()) 
                 and self.valorSoloEnFilaYColumna()
@@ -167,9 +168,10 @@ class ProblemaEspacioEstadosHitori:
         self.acciones = acciones
         self.estado_inicial = Objetos.Tablero(estado_inicial)
         global ordenPorCoste
-        ordenPorCoste = self.estado_inicial.get_array_orden();
+        ordenPorCoste = self.estado_inicial.get_orden();
 
     def es_estado_final(self, estado):
+        ''' Comprueba si es solucion, para ello se comprueba si contiene algun valor por fila o columna repetido. '''
         return self.comprobacionPorColumnas(estado) and self.comprobacionPorFilas(estado)
 
     def acciones_aplicables(self, estado):
@@ -178,6 +180,10 @@ class ProblemaEspacioEstadosHitori:
                 if accion.es_aplicable(estado))
     
     def comprobacionPorFilas(self, estado):
+        '''
+        Comprueba por filas si existe algun valor repetido.
+        @Params tablero
+        '''
         for fila in range(0, estado.size_hor()):
             for valor in range(1,estado.get_mayorDimension()+1):       
                 if (estado.get_Fila(fila).count(valor) > 1):
@@ -185,9 +191,10 @@ class ProblemaEspacioEstadosHitori:
         return True
 
     def comprobacionPorColumnas(self, estado):
+        '''
+        Comprueba por columnas si existe algun valor repetido
+        para ello se calcula traspuesta y se aplica el metodo anterior.
+        @Params tablero
+        '''
         transpuesta = estado.get_traspuesta()
-        for columna in range(0, transpuesta.size_hor()):
-            for valor in range(1,estado.get_mayorDimension()+1):
-                if (transpuesta.get_Fila(columna).count(valor) > 1):
-                    return False
-        return True
+        return self.comprobacionPorFilas(transpuesta);

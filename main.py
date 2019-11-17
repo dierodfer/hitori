@@ -21,11 +21,13 @@ tablero = []
 
 
 def init():
+    #Aumentamos limitador recursiones de python
     sys.setrecursionlimit(99999999)
     global window
     window = Tk()
-    window.title("Hitori")
-    window.geometry('800x500')
+    window.iconbitmap(default='favicon.ico')
+    window.title(" Hitori")
+    window.geometry('800x600')
     global columnas
     # Labels    
     lblFila = Label(window, text="N: " + str(filas))
@@ -203,21 +205,26 @@ def cargarVariablesGlobales(fil, col, tipo):
     columnas = int(col)
     tipoBusqueda = tipo
 
-    
 def createRandomTablero():
+    ''' Carga el tablero con casillas aleatorias con dimensiones proporcinadas.
+    Valores de casilas usados: de 1 hasta valor maximo de las dimensiones.
+    No se repiten mas de 2 valores repetidos por columna y fila, para aumentar la probabilidad de generar un tablero son solucion.
+    @Params tablero, filas, columnas
+    '''
     global tablero
     tablero = []
-    for f in range(filas):
+    f=0
+    c=0
+    while f<filas:
         arrayColumnas = []
-        for c in range(columnas):
+        while c<columnas:
             nuevo_valor = random.randrange(1, max(filas,columnas) + 1)
             if arrayColumnas.count(nuevo_valor) < 1:
                 arrayColumnas.append(nuevo_valor)
-            else:
-                nuevo_valor = random.randrange(1, max(filas,columnas) + 1)
-                arrayColumnas.append(nuevo_valor)
+                c+=1
         tablero.append(arrayColumnas)
-
+        c=0
+        f+=1
 
 def displayTablero():
     global lblTablero
