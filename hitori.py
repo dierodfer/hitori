@@ -1,6 +1,4 @@
 import objetos as Objetos
-# from multiprocessing.pool import ThreadPool
-# from threading import Thread
 
 ordenPorCoste = []
 
@@ -16,10 +14,9 @@ class BloquearCasilla:
         return self.estado.get_celda(self.f,self.c) != 0;
     
     def valorSoloEnFilaYColumna(self):
-        return (self.estado.get_coste_celda(self.f,self.c) < 0) #OPTIMIZADO
-        #return ([self.f,self.c] in estado.getPosisionesCasillasRepetidas(estado))
+        return (self.estado.get_coste_celda(self.f,self.c) < 0)
     
-    #Busca el valos mas importante que esta actualmente abierto y lo compara con el valor de la celda que quiere ejecutar en la accion
+    #Busca el valores mas importante que esta actualmente abierto y lo compara con el valor de la celda que quiere ejecutar en la accion
     def esValorMasRepetidoConCoste(self):
         global resultadoValorMasRepetido;
         valor = self.estado.get_celda(self.f,self.c)
@@ -39,6 +36,16 @@ class BloquearCasilla:
     #Sigue el camino de adyacentes diagolanales comprobando que no tiene mas adyacentes o 
     #toca un limite del tablero
     def cumpleRestriccionDeCamino(self,f,c, filaAnterior=-1, columnaAnterior=-1, iteraciones=1):
+        '''
+        ALGORITMO DEL CAMINO O SERPIENTE:
+            Algoritmo recursivo que dado una posicion inicial recorre siguiendo las diagonales bloqueadas,
+            hasta llegar a una de dos posibiles resultados,
+            a) Existe un ciclo
+            b) Existe un camino que corta el tablero (de borde a borde)
+            c) Todo correcto
+            
+            Nota: no importa el numero de casillas adyacentes bloqueadas el algoritmo recorre todos los caminos posibles.
+        '''
         self.adyacentesDiagonales = self.getAdyacentesDiagonalesBloqueadas(f, c)
 
         #Si entra en bucle, es un camino cerrado.
@@ -82,17 +89,17 @@ class BloquearCasilla:
                         return False;
                     else:
                         return True;  
-
-    
-    #Contiene una celda bloqueada directamente al lado
+                    
     def tieneAdyacentesEnCruzBloqueados(self):
+        ''' Devuelve si la casilla que se quiere aplicar
+        contiene casillas bloqueadas directamente al lado. Arriba, abajo, izquierda o derecha.'''
         return ((self.estado.get_celda(self.f+1,self.c) == 0) 
                 or (self.estado.get_celda(self.f, self.c+1) == 0) 
                 or (self.estado.get_celda(self.f-1,self.c) == 0) 
                 or (self.estado.get_celda(self.f, self.c-1) == 0))
     
     def getAdyacentesDiagonalesBloqueadas(self,f,c):
-       
+        ''' Devuelve una lista de posiciones que contiene las casillas diagonales bloqueadas.'''
         res= []
         if(self.estado.get_celda(f+1,c+1) == 0):
             res.append([f+1,c+1])
@@ -106,44 +113,6 @@ class BloquearCasilla:
     
     def es_aplicable(self, estado):
         self.estado=estado; 
-        
-#         if (not self.tieneAdyacentesEnCruzBloqueados()) and self.valorSoloEnFilaYColumna():
-#             return False
-# 
-#         pool = ThreadPool(processes=1)
-#         
-#         result1 = pool.apply_async(self.esValorMasRepetidoConCoste())
-#         result2 = pool.apply_async(self.cumpleRestriccionDeCamino(self.f, self.c))
-#         # do some other stuff in the main process
-#         
-#         boolean1 = result1.get()
-#         boolean2 = result2.get()
-#         
-#         return boolean1 and boolean2;
-        
-#         t1 = Thread(target=self.esValorMasRepetidoConCoste, args=()) 
-#         t2 = Thread(target=self.cumpleRestriccionDeCamino, args =(self.f, self.c)) 
-#         t1.start()
-#         t2.start()
-#         
-#         print(t1.join())
-#         print(t2.join())
-
-#         if self.tieneAdyacentesEnCruzBloqueados() | (not self.valorSoloEnFilaYColumna()):
-#             return False
-        
-#         pool = ThreadPool(processes=10)
-#         async_result = pool.apply_async(self.esValorMasRepetidoConCoste, ())
-#         async_result2 = pool.apply_async(self.cumpleRestriccionDeCamino, (self.f, self.c))
-# 
-#         return_val = async_result.get()
-#         return_val2 = async_result2.get()
-#         
-#         if (not return_val) | (not return_val2):
-#             return False
-#         
-#         return True
-#         print(resultadoValorMasRepetido)
         
         #Ordenador por coste de computacion ascendente, cuando uno devuelve negativo python retorna False sin ejecutar los posteriores
         return (
@@ -171,7 +140,9 @@ class ProblemaEspacioEstadosHitori:
         ordenPorCoste = self.estado_inicial.get_orden();
 
     def es_estado_final(self, estado):
-        ''' Comprueba si es solucion, para ello se comprueba si contiene algun valor por fila o columna repetido. '''
+        ''' Comprueba si es solucion.
+        Para ello se comprueba si no contiene algun valor por fila y despues por columna repetido. 
+        '''
         return self.comprobacionPorColumnas(estado) and self.comprobacionPorFilas(estado)
 
     def acciones_aplicables(self, estado):
@@ -180,9 +151,9 @@ class ProblemaEspacioEstadosHitori:
                 if accion.es_aplicable(estado))
     
     def comprobacionPorFilas(self, estado):
-        '''
-        Comprueba por filas si existe algun valor repetido.
-        @Params tablero
+        ''' Comprueba por filas si existe algun valor repetido. 
+        False -> encuentra repetido.
+        True -> ningun repetido.
         '''
         for fila in range(0, estado.size_hor()):
             for valor in range(1,estado.get_mayorDimension()+1):       
@@ -194,7 +165,6 @@ class ProblemaEspacioEstadosHitori:
         '''
         Comprueba por columnas si existe algun valor repetido
         para ello se calcula traspuesta y se aplica el metodo anterior.
-        @Params tablero
         '''
         transpuesta = estado.get_traspuesta()
         return self.comprobacionPorFilas(transpuesta);
