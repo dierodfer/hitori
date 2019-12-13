@@ -53,7 +53,7 @@ def init():
     inputFilas = Entry(window, width=4)
     inputColumnas = Entry(window, width=4)
     inputTipo = Combobox(window)
-    inputTipo['values'] = ('Busqueda en profundidad', 'Busqueda en anchura', 'Busqueda optima', 'Busqueda A*')
+    inputTipo['values'] = ('Busqueda en profundidad', 'Busqueda en anchura', 'Busqueda optima')
     inputTipo.current(0)
     
     # Muestra el error enviado
@@ -175,24 +175,24 @@ def resolverHitori():
     acciones = []
     result = ''
     table = Objetos.Tablero(tablero)
-    for posicion in table.getPosisionesCasillasRepetidas():
-        accion = problema_hitori.BloquearCasilla(posicion[0], posicion[1], table.get_coste_celda(posicion[0], posicion[1]));
+    #Recogemos y creamos todas las acciones posibles inciales
+    casillasRepetidas = table.getPosisionesCasillasRepetidas()
+    for posicion in casillasRepetidas:
+        coste = table.get_coste_celda(posicion[0], posicion[1])
+        accion = problema_hitori.BloquearCasilla(posicion[0], posicion[1], coste)
         acciones.append(accion)
     
     problemaHiroti = problema_hitori.ProblemaEspacioEstadosHitori(acciones, tablero);
     
     if(tipoBusqueda == 'Busqueda en anchura'):
-        b_anchura = busqueda_estados.BusquedaEnAnchura(detallado=False)
+        b_anchura = busqueda_estados.BusquedaEnAnchura(detallado=True)
         result = b_anchura.buscar(problemaHiroti)
     if(tipoBusqueda == 'Busqueda en profundidad'):
-        b_profundidad = busqueda_estados.BusquedaEnProfundidad(detallado=False)
+        b_profundidad = busqueda_estados.BusquedaEnProfundidad(detallado=True)
         result = b_profundidad.buscar(problemaHiroti)
     if(tipoBusqueda == 'Busqueda optima'):
-        b_optima = busqueda_estados.Busquedaoptima(detallado=False)
+        b_optima = busqueda_estados.Busquedaoptima(detallado=True)
         result = b_optima.buscar(problemaHiroti)
-    if(tipoBusqueda == 'Busqueda A*'):
-#          b_optima = busqueda_estados.BusquedaAEstrella(h,detallado=True)
-        result = 'hola'
     print(result)
     return result
 

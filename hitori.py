@@ -39,7 +39,7 @@ class BloquearCasilla:
         '''
         ALGORITMO DEL CAMINO O SERPIENTE:
             Algoritmo recursivo que dado una posicion inicial recorre siguiendo las diagonales bloqueadas,
-            hasta llegar a una de dos posibiles resultados,
+            hasta llegar a una de los posibiles resultados:
             a) Existe un ciclo
             b) Existe un camino que corta el tablero (de borde a borde)
             c) Todo correcto

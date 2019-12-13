@@ -83,7 +83,8 @@ class Tablero:
         listaCasillasConValorRepeticoEnFilas = self.get_casillasRepetidasPorFilaYValor()
     
         #Union de las listas
-        res.append(listaCasillasConValorRepeticoEnColumnas)
+        for c in listaCasillasConValorRepeticoEnColumnas:
+            res.append(c)
         for i in listaCasillasConValorRepeticoEnFilas:
             if i not in res:
                 res.append(i)
