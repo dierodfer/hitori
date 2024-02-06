@@ -1,9 +1,11 @@
-Trabajo final aplicacion python para la asignatura IA(Inteligencia Artificial) de la Universidad de Sevilla (US).
+Aplicacion python 🐍
 
-La aplicacion debe de resolver el problema Hitori(rompecabezas japones) con diferentes tipos de busqueda.
+Resuelve el el juego de mesa Japones [Hitori](https://es.wikipedia.org/wiki/Hitori) con diferentes métodos de busquedas: espacio de estados, ramificacion y poda.
+
+[Ejemplo de juego](https://es.puzzle-hitori.com/)
 
 **Colaboradores:**
 
-*Diego Rodriguez Fernandez*
+[*Diego Rodriguez*](https://github.com/dierodfer)
 
 *Luis Miguel Garcia Rodriguez*
