@@ -6,6 +6,6 @@ Resuelve el el juego de mesa Japones [Hitori](https://es.wikipedia.org/wiki/Hito
 
 **Colaboradores:**
 
-*Diego Rodriguez Fernandez*
+[*Diego Rodriguez*](https://github.com/dierodfer)
 
 *Luis Miguel Garcia Rodriguez*
